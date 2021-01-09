@@ -1,0 +1,262 @@
+\documentclass{article}
+\pdfpagewidth=8.5in
+\pdfpageheight=11in
+\usepackage{ijcai21}
+\usepackage{times}
+\usepackage{soul}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage[utf8]{inputenc}
+\usepackage[small]{caption}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{booktabs}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\urlstyle{same}
+
+% \usepackage{showframe}
+
+\newtheorem{proposition}{Proposition}
+
+\usepackage{complexity}
+
+\pdfinfo{
+/TemplateVersion (IJCAI.2021.0)
+}
+
+\title{Solving Graph Homomorphism and Subgraph Isomorphism Problems Faster Through Neighbourhood
+Maximum Clique Constraints}
+
+\author{
+Ciaran McCreesh$^1$
+\and
+Sonja Kraiczy$^2$
+\affiliations
+$^1$University of Glasgow\\
+$^2$University of Oxford\\
+\emails
+ciaran.mccreesh@glasgow.ac.uk
+}
+
+\newcommand{\neighbourhood}{\operatorname{N}}
+\newcommand{\vertexset}{\operatorname{V}}
+\newcommand{\degree}{\operatorname{deg}}
+\newcommand{\nds}{\operatorname{S}}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+    We can find graph homomorphisms faster through clique constraints.
+\end{abstract}
+
+\section{Introduction}
+
+A \emph{graph homomorphism} is a function between two graphs that maps adjacent vertices to adjacent
+vertices. An injective graph homomorphism is more commonly known as a \emph{subgraph isomorphism},
+whilst a \emph{locally injective homomorphism} is one which is injective when restricted to any
+individual vertex and its neighbourhood \cite{DBLP:journals/csr/FialaK08}. Finding any of these three kinds of homomorphism between
+two given graphs is \NP-complete.  The subgraph isomorphism problem arises in many practical
+applications, including ??, and as such there has been a lot of research into finding algorithms
+which perform well empirically. Most approaches are based either upon very fast but simple
+backtracking algorithms,
+\cite{DBLP:journals/pami/CordellaFSV04,DBLP:journals/bmcbi/BonniciGPSF13,DBLP:conf/gbrpr/CarlettiFSV17}
+which often but not always perform well on very easy instances, or upon constraint programming
+algorithms
+\cite{DBLP:journals/constraints/ZampelliDS10,DBLP:journals/ai/Solnon10,DBLP:conf/cp/AudemardLMGP14,DBLP:conf/cp/McCreeshP15,DBLP:conf/cpaior/ArchibaldDHMP019},
+which have higher startup costs but that perform vastly better on harder instances and much more
+consistently on easy instances \cite{DBLP:journals/jair/McCreeshPST18,DBLP:conf/gbrpr/Solnon19}. The
+current state of the art is the Glasgow Subgraph Solver \cite{DBLP:conf/gg/McCreeshP020}, which is a
+dedicated constraint programming solver for subgraph-finding problems. Much of its performance comes
+from inference strategies based upon degrees and neighbourhood degree sequences
+\cite{DBLP:journals/constraints/ZampelliDS10}, counting paths between vertices
+\cite{DBLP:conf/cp/AudemardLMGP14,DBLP:conf/cp/McCreeshP15}, and cardinality reasoning
+\cite{DBLP:journals/ai/Solnon10}, which can be used to eliminate many infeasible candidate
+assignments without search.
+
+One might hope that this inference would also be helpful for other graph homomorphism problem
+variants. Indeed, this paper proves that many, but not all, of these strategies are also valid in
+the locally injective case, and that a weakened form of one other strategy is valid for all
+homomorphisms. However, we also prove that \emph{none} of the other strategies are valid for finding
+homomorphisms where there is no injectivity requirement. Finally, we introduce a new filtering
+technique that is based upon finding the maximum clique in the neighbourhood of each vertex, and
+prove that this technique is valid even in the general case. Although this new filtering technique
+involves solving a large number of \NP-complete problems, we demonstrate that it is effective in
+practice, particularly for the non-injective problem where filtering can solve instances ??many
+hundreds of times faster in aggregate. This shows, for the first time, that modern constraint
+programming techniques can be practical for less constrained graph homomorphism finding problems;
+previous algorithmic approaches have focused instead upon worst-case computational bounds
+\cite{DBLP:journals/csr/FialaK08,DBLP:journals/ipl/Rzazewski14,DBLP:journals/tcs/ChaplickFHPT15},
+whose practical utility has yet to be demonstrated. The empirical effectiveness of our results is
+especially important because many current applications use subgraph isomorphism solvers only because
+they perform well using off the shelf solvers, rather than because they exactly match ideal domain
+requirements ??cite.
+
+\section{Background and Theory}
+
+Let $G$ and $H$ be graphs. Let $v \in \vertexset(G)$ be a vertex of $G$. The \emph{(open)
+neighbourhood} of $v$, written $\neighbourhood_G(v)$, is the set of vertices adjacent to $v$ not
+including $v$ itself, whilst the closed neighbourhood of $v$, written $\neighbourhood_G[v]$, is the
+neighbourhood plus $v$. The \emph{degree} of a vertex, $\degree_G(v)$, is the cardinality of its open
+neighbourhood. Given a vertex set $S \subseteq \vertexset(G)$, the subgraph \emph{induced by} $S$,
+written $G[S]$, is the subgraph of $G$ with only the vertices in $S$ together with all the edges
+between them. A \emph{clique} is a subgraph where every vertex is adjacent to every other in the
+subgraph.
+
+A \emph{homomorphism} from $G$ to $H$ is a function mapping vertices of $G$ to vertices of $H$, such
+that adjacent vertices in $G$ are mapped to adjacent vertices in $H$. A homomorphism $h$ is
+\emph{locally injective} if for every vertex $w$, the restriction of $h$ to $G[N_G[w]]$ is
+injective; if $h$ is injective globally we call it a \emph{(non-induced) subgraph isomorphism}.
+
+?? loops, be really careful with this
+
+?? CSP, hom as CSP
+
+An \emph{implied constraint} is a constraint that can be added to a CSP without altering its set of
+solutions. ?? Is it best wording all of this in terms of implied constraints?
+
+\begin{proposition}For the problem of finding a subgraph isomorphism $i$ from a graph $G$ to a graph
+    $H$, the following constraints are implied for any vertex $v \in \vertexset(G)$:
+    \begin{enumerate}
+        \item We cannot map $v$ to a vertex of lower degree, $\degree(v) \le \degree(i(v))$.
+        \item Furthermore, ??NDS.
+    \end{enumerate}
+\end{proposition}
+
+?? Show that these work for locally injective but not homomorphism
+
+\begin{proposition}For the problem of finding a subgraph isomorphism $i$ from a graph $G$ to a graph
+    $H$, the following constraints are implied for any pair of vertices $v, w \in \vertexset(G)$:
+    \begin{enumerate}
+        \item The distance between $v$ and $w$ is at most the distance between $i(v)$ and $i(w)$.
+        \item For any pair of vertices $v, w \in \vertexset(G)$, if there are at least $k$ simple
+            paths of length exactly $\ell$ between $v$ and $w$, then there must be at least $k$
+            simple paths of length exactly $\ell$ between $i(v)$ and $i(w)$.
+    \end{enumerate}
+\end{proposition}
+
+?? This fourth one is hard. The third one actually works for homomorphisms.
+
+?? Corollary: $G^d$ graphs.
+
+?? Clique, be very careful with target loops. What we want to prove is, if the maximum clique in the
+neighbourhood of a pattern vertex $p$ has $n$ vertices, and if the target graph has no loops, then
+$p$ cannot be mapped to any target vertex $t$ unless $t$ is contained in a clique of at least $n$
+vertices.
+
+?? The point is we can solve clique decision much faster than general homomorphism, and we only need
+to do it once per target vertex.
+
+\section{Design and Implementation}
+
+We use the subgraph isomorphism code in the Glasgow Subgraph Solver \cite{DBLP:conf/gg/McCreeshP020}
+as a starting point.  We implemented distance filtering for the basic homomorphism problem, using
+the existing supplemental graphs framework that the solver uses for subgraph isomorphism to create
+pseudo-adjacency constraints for vertices that are distance two away from each other; this was
+routine.  We also implemented clique constraints, initially using the Glasgow Subgraph Solver's
+existing maximum clique solver to perform domain filtering. Preliminary experiments showed that a
+na{\"\i}ve approach, which begins by calculating the maximum clique size for the neighbourhood of
+each pattern vertex and each target vertex, would add as much as three minutes of preprocessing time
+to some problem instances which could otherwise be solved in a few seconds. We therefore use a more
+intelligent approach, which we now describe.
+
+\subsection{Optimising Maximum Clique Solver Calls}
+
+We calculate the maximum clique size for the neighbourhood of a first pattern vertex $p_1$.  Having
+found a maximum clique $\omega_1$ for a vertex $p$, for every other vertex $q \in \omega_1$, we
+remember that the maximum clique for $q$'s neighbourhood has at least $|\omega_1|$ vertices. We then
+proceed to find a maximum clique $\omega_2$ for a second pattern vertex $p_2$; however, if $p_2$ was
+a member of $\omega_1$, we initialise the clique solver with a lower bound of $n$ rather than
+starting from scratch. We then find the maximum clique size for a third pattern vertex $p_3$, using
+whichever lower bound of $|\omega_1|$ and $|\omega_2|$ is better (if both are valid), and so on.
+
+We then move on to the target vertices, using a similar caching routine. Rather than calculating a
+clique size for every single target vertex, we only calculate a value for target vertices which are
+present in at least one variable's domain, after other unary constraints have been applied.
+(Depending upon the problem variant, implied constraints like degree and neighbourhood degree
+sequence can eliminate some target vertices from the domains of all pattern variables.)
+Additionally, we do not require the maximum clique solver to run to completion and guarantee that it
+has found a maximum clique. Instead, we allow it to stop as soon as it has found a clique with as
+many vertices as the largest pattern clique. This is useful in practice because it may be very hard
+to decide whether a particular target vertex has neighbourhood clique size of, say, 15 or 16, but if
+the largest pattern vertex has a neighbourhood clique size of only 5 then this is irrelevant.
+
+?? Why this works
+
+\subsection{Proof Logging}
+
+?? How to log proofs
+
+\section{Experiments}
+
+\begin{figure*}[p]
+    \,\hfill\begin{tabular}{c@{}c@{}c@{}}
+    \includegraphics{gen-graph-cumulatives.pdf}
+        &
+    \includegraphics{gen-graph-cumulatives-differences.pdf}
+        &
+    \includegraphics{gen-graph-cumulatives-aggregate.pdf}
+        \\[5mm]
+    \includegraphics{gen-graph-cumulatives-hom.pdf}
+        &
+    \includegraphics{gen-graph-cumulatives-local.pdf}
+        &
+    \includegraphics{gen-graph-cumulatives-si.pdf}
+    \end{tabular}\hfill\,
+
+    \caption{On the top left, the cumulative number of instances solved over time for the three
+    problem variants, with and without clique filtering, and with and without distance filtering for
+    the homomorphism problem. The remaining plots re-display this data, as follows. The three plots
+    on the bottom row zoom in on the cumulative number of instances solved, for the homomorphism
+    problem on the left, the locally injective homomorphism problem in the centre, and the subgraph
+    isomorphism problem on the right. The top centre plot shows the additional number of instances
+    solved at any given time when using the new forms of filtering for all problem variants, and the
+    top right plot shows the aggregate speedups from each form of filtering.}
+\end{figure*}
+\begin{figure*}[p]
+    \,\hfill\begin{tabular}{c@{\hspace{4mm}}c@{\hspace{4mm}}c@{\hspace{4mm}}c@{\hspace{4mm}}}
+        \includegraphics{gen-graph-scatter-hom-c.pdf}
+        &
+        \includegraphics{gen-graph-scatter-hom-cd.pdf}
+        &
+        \includegraphics{gen-graph-scatter-local.pdf}
+        &
+        \includegraphics{gen-graph-scatter-si.pdf}
+    \end{tabular}\hfill\,
+
+    \caption{Looking at the effects of additional filtering on an instance by instance basis, for
+    homomorphism with just clique filtering and with both clique and distance filtering, and for the
+    other two variants with clique filtering. Each point represents one instance, the vertical axis
+    is the runtime with filtering in ms, and the horizontal axis is the runtime without filtering in
+    ms (and so points below the diagonal are speedups). Points on the outer axes are timeouts. The
+    different point styles show the different families of instance from the benchmark set, and
+    illustrate that in each the filtering is broadly useful rather than being specific to a single
+    kind of application.}
+\end{figure*}
+
+We now evaluate this approach empirically.
+
+?? How good is it
+
+?? Time on cliques
+
+?? Whether cliques are hard
+
+\section{Conclusion and Future Work}
+
+?? Neighbourhood colourability? Cores?
+
+\section*{Acknowledgements}
+
+This work was supported by the Engineering and Physical Sciences Research Council [grant number
+EP/P026842/1].
+
+\bibliographystyle{named}
+\bibliography{paper}
+
+\end{document}
+
+% vim: set tw=100 spell spelllang=en : %
