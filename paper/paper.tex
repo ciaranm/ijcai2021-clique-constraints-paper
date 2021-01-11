@@ -16,9 +16,12 @@
 \usepackage{algorithmic}
 \urlstyle{same}
 
+\usepackage{cleveref}
+
 % \usepackage{showframe}
 
 \newtheorem{proposition}{Proposition}
+\newtheorem{corollary}{Corollary}
 
 \usepackage{complexity}
 
@@ -26,8 +29,8 @@
 /TemplateVersion (IJCAI.2021.0)
 }
 
-\title{Solving Graph Homomorphism and Subgraph Isomorphism Problems Faster Through Neighbourhood
-Maximum Clique Constraints}
+\title{Solving Graph Homomorphism and Subgraph Isomorphism Problems Faster Through Clique Neighbourhood
+Constraints}
 
 \author{
 Ciaran McCreesh$^1$
@@ -97,70 +100,143 @@ requirements ??cite.
 
 \section{Background and Theory}
 
-Let $G$ and $H$ be graphs. Let $v \in \vertexset(G)$ be a vertex of $G$. The \emph{(open)
-neighbourhood} of $v$, written $\neighbourhood_G(v)$, is the set of vertices adjacent to $v$ not
-including $v$ itself, whilst the closed neighbourhood of $v$, written $\neighbourhood_G[v]$, is the
-neighbourhood plus $v$. The \emph{degree} of a vertex, $\degree_G(v)$, is the cardinality of its open
-neighbourhood. Given a vertex set $S \subseteq \vertexset(G)$, the subgraph \emph{induced by} $S$,
-written $G[S]$, is the subgraph of $G$ with only the vertices in $S$ together with all the edges
-between them. A \emph{clique} is a subgraph where every vertex is adjacent to every other in the
-subgraph.
+We begin by introducing notation and terminology, and by giving the theoretical results which
+support our implementation.
 
-A \emph{homomorphism} from $G$ to $H$ is a function mapping vertices of $G$ to vertices of $H$, such
-that adjacent vertices in $G$ are mapped to adjacent vertices in $H$. A homomorphism $h$ is
-\emph{locally injective} if for every vertex $w$, the restriction of $h$ to $G[N_G[w]]$ is
-injective; if $h$ is injective globally we call it a \emph{(non-induced) subgraph isomorphism}.
+\paragraph{Graphs.} Let $G$ and $H$ be graphs. Let $v \in \vertexset(G)$ be a vertex of $G$. The
+\emph{(open) neighbourhood} of $v$, written $\neighbourhood_G(v)$, is the set of vertices adjacent
+to $v$ not including $v$ itself, whilst the closed neighbourhood of $v$, written
+$\neighbourhood_G[v]$, is the neighbourhood plus $v$. The \emph{degree} of a vertex, $\degree_G(v)$,
+is the cardinality of its open neighbourhood. The \emph{neighbourhood degree sequence} of a vertex
+is the sequence consisting of the degrees of its neighbours, in descending order. Given a vertex set
+$S \subseteq \vertexset(G)$, the subgraph \emph{induced by} $S$, written $G[S]$, is the subgraph of
+$G$ with only the vertices in $S$ together with all the edges between them. A \emph{clique} is a
+subgraph where every vertex is adjacent to every other in the subgraph.
+
+\paragraph{Homomorphisms.} A \emph{homomorphism} from $G$ to $H$ is a function mapping vertices of
+$G$ to vertices of $H$, such that adjacent vertices in $G$ are mapped to adjacent vertices in $H$. A
+homomorphism $h$ is \emph{locally injective} if for every vertex $w$, the restriction of $h$ to
+$G[N_G[w]]$ is injective; if $h$ is injective globally we call it a \emph{(non-induced) subgraph
+isomorphism}.
 
 ?? loops, be really careful with this
 
-?? CSP, hom as CSP
+\paragraph{Constraint programming.} ?? A constraint programming algorithm.
 
-An \emph{implied constraint} is a constraint that can be added to a CSP without altering its set of
-solutions. ?? Is it best wording all of this in terms of implied constraints?
+\paragraph{Degree-based invariants for homomorphisms.} The use of constraint programming techniques
+for finding homomorphisms relies upon exploiting various invariants. For example, every recent
+constraint programming solver makes use of the following result.
 
-\begin{proposition}For the problem of finding a subgraph isomorphism $i$ from a graph $G$ to a graph
-    $H$, the following constraints are implied for any vertex $v \in \vertexset(G)$:
+\begin{proposition}\label{proposition:degreends}
+    Suppose a subgraph isomorphism $i$ exists from a graph $G$ to a graph $H$. Let
+    $v$ be any vertex. Then:
     \begin{enumerate}
-        \item We cannot map $v$ to a vertex of lower degree, $\degree(v) \le \degree(i(v))$.
-        \item Furthermore, ??NDS.
+        \item The function cannot map $v$ to a vertex of lower degree, $\degree(v) \le \degree(i(v))$.
+        \item Furthermore, $v$ cannot be mapped to any vertex whose neighbourhood degree sequence is
+            not pointwise greater than or equal to its own
+            \cite{DBLP:journals/constraints/ZampelliDS10}.
     \end{enumerate}
 \end{proposition}
 
-?? Show that these work for locally injective but not homomorphism
+The simplest way for a constraint programming algorithm to use these results is as unary
+constraints, which are propagated when domains are initialised, before search begins. For each
+domain representing a pattern vertex, any value representing target vertex whose degree or
+neighbourhood degree sequence is too low may immediately be rejected.
+
+These invariants do \emph{not} hold for homomorphisms in general. As a simple counter-example, a
+homomorphism may map a star graph (one central vertex of high degree, which is adjacent to many
+other vertices, each of which has no other neighbours) onto a single edge. However, it is
+straightforward to verify the following.
+
+\begin{proposition}Both invariants in \cref{proposition:degreends} are also valid for locally
+injective homomorphisms.\end{proposition}
+
+\paragraph{Path-based invariants for homomorphisms.} Constraint programming solvers can also exploit
+invariants that are based upon paths. This is done by automatically adding \emph{implied}
+constraints to the problem that are implied by the original model, but that will give stronger
+propagation power.
 
 \begin{proposition}For the problem of finding a subgraph isomorphism $i$ from a graph $G$ to a graph
     $H$, the following constraints are implied for any pair of vertices $v, w \in \vertexset(G)$:
     \begin{enumerate}
-        \item The distance between $v$ and $w$ is at most the distance between $i(v)$ and $i(w)$.
-        \item For any pair of vertices $v, w \in \vertexset(G)$, if there are at least $k$ simple
+        \item The distance between $v$ and $w$ is at most the distance between $i(v)$ and $i(w)$
+            \cite{DBLP:conf/cp/AudemardLMGP14}.
+        \item If there are at least $k$ simple
             paths of length exactly $\ell$ between $v$ and $w$, then there must be at least $k$
-            simple paths of length exactly $\ell$ between $i(v)$ and $i(w)$.
+            simple paths of length exactly $\ell$ between $i(v)$ and $i(w)$
+            \cite{DBLP:conf/cp/McCreeshP15}.
     \end{enumerate}
 \end{proposition}
 
-?? This fourth one is hard. The third one actually works for homomorphisms.
+It is easy to verify that the first of these two properties is valid for \emph{any} homomorphism.
+The second property does not hold for homomorphisms in general: for example, a pair of vertices
+connected by three paths of length two may be mapped onto a pair of vertices connected by a single
+path of length two. Local injectivity is trickier. The second property does not hold in full
+generality, because, for example, a path of length three may be mapped onto a triangle whilst
+respecting local injectivity. However, a weaker result holds:
+
+\begin{proposition}For the problem of finding a locally injective graph homomorphism $i$ from a
+    graph $G$ to a graph $H$, for any pair of vertices $v, w \in \vertexset(G)$, if there are at
+    least $k$ simple paths of length exactly two between $v$ and $w$, then there must be at least
+    $k$ simple paths of length exactly two between $i(v)$ and $i(w)$.
+\end{proposition}
+
+\begin{proof}Let $\{ x_1, \ldots, x_n \}$ be the intermediate vertices on the paths of length two
+between $v$ and $w$. Observe that each $x_j$ is in the neighbourhood of $v$, and so must be mapped
+    to different vertices. Thus each sequence $(i(v), i(x_i), i(w))$ gives a distinct simple path of
+length two between $i(v)$ and $i(w)$ as required.\end{proof}
 
 ?? Corollary: $G^d$ graphs.
 
-?? Clique, be very careful with target loops. What we want to prove is, if the maximum clique in the
-neighbourhood of a pattern vertex $p$ has $n$ vertices, and if the target graph has no loops, then
-$p$ cannot be mapped to any target vertex $t$ unless $t$ is contained in a clique of at least $n$
-vertices.
+\paragraph{Cliques and homomorphisms.} Finally, we come to the main result of this paper. Observe
+that until now, we have not seen any unary constraints which are valid for the general homomorphism
+problem. All existing constraint programming approaches for the subgraph isomorphism problem begin
+by branching on the variable which has the smallest domain---typically this will be a domain for a
+pattern vertex of high degree, or which has many high degree neighbours. Furthermore, once one such
+guessed assignment has been made, adjacency propagation means many other domains will be
+substantially reduced in size, making subsequent branching choices simpler.  However, for
+homomorphism problems, if we cannot find any implied unary constraints then every domain will
+initially be of the same size, which will make it much harder for a solver to know where to start.
+This motivates the following observation.
 
-?? The point is we can solve clique decision much faster than general homomorphism, and we only need
-to do it once per target vertex.
+\begin{proposition}\label{proposition:clique}
+    Suppose we are finding a graph homomorphism $i$ from a graph $G$ to a graph $H$ where $H$ does
+    not contain any loops. Suppose there is a $k$ vertex clique in $G$. Then the image of this
+    clique under $i$ must also be a $k$ vertex clique.
+\end{proposition}
+
+\begin{proof}
+    Let $j$ and $k$ be two distinct vertices of the clique in $G$. By definition of a homomorphism,
+    $i(j)$ and $i(k)$ must be adjacent. And, because $H$ does not contain loops, $i(j)$ cannot equal
+    $i(k)$.
+\end{proof}
+
+\begin{corollary}\Cref{proposition:clique} holds for locally injective graph homomorphisms and for
+    subgraph isomorphisms even if loops are present in the second graph.
+\end{corollary}
+
+We will discuss how this is useful in practice in the following section.
 
 \section{Design and Implementation}
 
-We use the subgraph isomorphism code in the Glasgow Subgraph Solver \cite{DBLP:conf/gg/McCreeshP020}
-as a starting point.  We implemented distance filtering for the basic homomorphism problem, using
+Having determined which commonly-used subgraph isomorphism invariants do and do not hold for other
+forms of homomorphism, and having discovered a new clique-based invariant, we will now look at how
+these invariants may be used in practice. Our starting point is the Glasgow Subgraph Solver
+\cite{DBLP:conf/gg/McCreeshP020}, due to it being the current single strongest solver for the
+subgraph isomorphism problem.
+
+??
+
+We implemented distance filtering for the basic homomorphism problem, using
 the existing supplemental graphs framework that the solver uses for subgraph isomorphism to create
 pseudo-adjacency constraints for vertices that are distance two away from each other; this was
-routine.  We also implemented clique constraints, initially using the Glasgow Subgraph Solver's
-existing maximum clique solver to perform domain filtering. Preliminary experiments showed that a
-na{\"\i}ve approach, which begins by calculating the maximum clique size for the neighbourhood of
-each pattern vertex and each target vertex, would add as much as three minutes of preprocessing time
-to some problem instances which could otherwise be solved in a few seconds. We therefore use a more
+routine.
+
+We also implemented clique constraints, initially using the Glasgow Subgraph Solver's existing
+maximum clique solver to perform domain filtering. Preliminary experiments showed that a na{\"\i}ve
+approach, which begins by calculating the maximum clique size for the neighbourhood of each pattern
+vertex and each target vertex, would add as much as three minutes of preprocessing time to some
+problem instances which could otherwise be solved in a few seconds. We therefore use a more
 intelligent approach, which we now describe.
 
 \subsection{Optimising Maximum Clique Solver Calls}
