@@ -106,7 +106,7 @@ support our implementation.
 \paragraph{Graphs.} Let $G$ and $H$ be graphs. Let $v \in \vertexset(G)$ be a vertex of $G$. The
 \emph{(open) neighbourhood} of $v$, written $\neighbourhood_G(v)$, is the set of vertices adjacent
 to $v$ not including $v$ itself, whilst the closed neighbourhood of $v$, written
-$\neighbourhood_G[v]$, is the neighbourhood plus $v$. The \emph{degree} of a vertex, $\degree_G(v)$,
+$\neighbourhood_G[v]$, is the neighbourhood of $v$ plus $v$. The \emph{degree} of a vertex, $\degree_G(v)$,
 is the cardinality of its open neighbourhood. The \emph{neighbourhood degree sequence} of a vertex
 is the sequence consisting of the degrees of its neighbours, in descending order. Given a vertex set
 $S \subseteq \vertexset(G)$, the subgraph \emph{induced by} $S$, written $G[S]$, is the subgraph of
@@ -124,32 +124,29 @@ isomorphism}.
 \paragraph{Constraint programming.} ?? A constraint programming algorithm.
 
 \paragraph{Degree-based invariants for homomorphisms.} The use of constraint programming techniques
-for finding homomorphisms relies upon exploiting various invariants. For example, every recent
-constraint programming solver makes use of the following result.
+for finding homomorphisms relies upon exploiting various invariants. It is straightforward to verify the following.
 
 \begin{proposition}\label{proposition:degreends}
-    Suppose a subgraph isomorphism $i$ exists from a graph $G$ to a graph $H$. Let
+    Suppose  $i$ is a locally injective homomorphism from a $G$ to  $H$. Let
     $v$ be any vertex. Then:
     \begin{enumerate}
-        \item The function cannot map $v$ to a vertex of lower degree, $\degree(v) \le \degree(i(v))$.
+        \item $i$ cannot map $v$ to a vertex of lower degree, $\degree_G(v) \le \degree_H(i(v))$.
         \item Furthermore, $v$ cannot be mapped to any vertex whose neighbourhood degree sequence is
             not pointwise greater than or equal to its own
-            \cite{DBLP:journals/constraints/ZampelliDS10}.
+           .
     \end{enumerate}
 \end{proposition}
+Since subgraph isomorphisms are in particular locally injective, these also hold for subgraph isomorphisms \cite{DBLP:journals/constraints/ZampelliDS10}.
+Every recent
+constraint programming solver makes use of the of the above invariants for subgraph isomowphisms.
+However, these invariants do \emph{not} hold for homomorphisms in general. As a simple counter-example, a
+homomorphism may map a star graph (one central vertex of high degree, which is adjacent to many
+other vertices, each of which has no other neighbours) onto a single edge.
 
 The simplest way for a constraint programming algorithm to use these results is as unary
 constraints, which are propagated when domains are initialised, before search begins. For each
 domain representing a pattern vertex, any value representing target vertex whose degree or
 neighbourhood degree sequence is too low may immediately be rejected.
-
-These invariants do \emph{not} hold for homomorphisms in general. As a simple counter-example, a
-homomorphism may map a star graph (one central vertex of high degree, which is adjacent to many
-other vertices, each of which has no other neighbours) onto a single edge. However, it is
-straightforward to verify the following.
-
-\begin{proposition}Both invariants in \cref{proposition:degreends} are also valid for locally
-injective homomorphisms.\end{proposition}
 
 \paragraph{Path-based invariants for homomorphisms.} Constraint programming solvers can also exploit
 invariants that are based upon paths. This is done by automatically adding \emph{implied}
@@ -159,7 +156,7 @@ propagation power.
 \begin{proposition}For the problem of finding a subgraph isomorphism $i$ from a graph $G$ to a graph
     $H$, the following constraints are implied for any pair of vertices $v, w \in \vertexset(G)$:
     \begin{enumerate}
-        \item The distance between $v$ and $w$ is at most the distance between $i(v)$ and $i(w)$
+        \item The distance between $v$ and $w$ is at least the distance between $i(v)$ and $i(w)$
             \cite{DBLP:conf/cp/AudemardLMGP14}.
         \item If there are at least $k$ simple
             paths of length exactly $\ell$ between $v$ and $w$, then there must be at least $k$
@@ -200,9 +197,8 @@ initially be of the same size, which will make it much harder for a solver to kn
 This motivates the following observation.
 
 \begin{proposition}\label{proposition:clique}
-    Suppose we are finding a graph homomorphism $i$ from a graph $G$ to a graph $H$ where $H$ does
-    not contain any loops. Suppose there is a $k$ vertex clique in $G$. Then the image of this
-    clique under $i$ must also be a $k$ vertex clique.
+    Let $i$ be a homomorphism from $G$ to $H$ where $H$ does
+    not contain any loops. Let $S\subset V$ be such that $G[S]=K_k$
 \end{proposition}
 
 \begin{proof}
