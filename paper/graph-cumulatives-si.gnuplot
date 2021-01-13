@@ -28,6 +28,6 @@ set style fill transparent solid 0.3 noborder
 set title "Subgraph Isomorphism"
 
 plot \
-    "runtimes.data" u (cx("fatanode-results/gss-20210102",1)):(cy("fatanode-results/gss-20210102",1)) smooth cum w l ls 1 lw 1 ti "None" at end, \
-    "runtimes.data" u (cx("fatanode-results/gss-cliques-20210102",1)):(cy("fatanode-results/gss-cliques-20210102",1)) smooth cum w l ls 1 lw 2 ti "Clq" at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-20210111",1)):(cy("fatanode-results/gss-20210111",1)) smooth cum w l ls 1 lw 1 ti "None" at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-cliques-20210111",1)):(cy("fatanode-results/gss-cliques-20210111",1)) smooth cum w l ls 1 lw 2 ti "Clq" at end
 

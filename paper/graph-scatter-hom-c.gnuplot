@@ -30,6 +30,6 @@ getlc(c)=stringcolumn(c)[1:2]eq"si"?1:stringcolumn(c)[1:1]eq"g"?2:stringcolumn(c
 set title "Homomorphism (Cliques)"
 
 plot \
-    "runtimes.data" u (sx("fatanode-results/gss-noninjective-nosupplementals-20210102",1)):(sx("fatanode-results/gss-cliques-noninjective-nosupplementals-20210102",1)):(getpt("instance")):(getlc("instance")) w p pt var lc pal ps 0.5, \
+    "runtimes.data" u (sx("fatanode-results/gss-noninjective-nosupplementals-20210111",1)):(sx("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)):(getpt("instance")):(getlc("instance")) w p pt var lc pal ps 0.5, \
     x w l ls -1
 

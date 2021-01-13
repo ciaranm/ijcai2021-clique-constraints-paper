@@ -28,6 +28,6 @@ set style fill transparent solid 0.3 noborder
 set title "Locally Injective"
 
 plot \
-    "runtimes.data" u (cx("fatanode-results/gss-locallyinjective-20210102",1)):(cy("fatanode-results/gss-locallyinjective-20210102",1)) smooth cum w l ls 4 lw 1 ti "None" at end, \
-    "runtimes.data" u (cx("fatanode-results/gss-cliques-locallyinjective-20210102",1)):(cy("fatanode-results/gss-cliques-locallyinjective-20210102",1)) smooth cum w l ls 4 lw 2 ti "Clq" at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-locallyinjective-20210111",1)):(cy("fatanode-results/gss-locallyinjective-20210111",1)) smooth cum w l ls 4 lw 1 ti "None" at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-cliques-locallyinjective-20210111",1)):(cy("fatanode-results/gss-cliques-locallyinjective-20210111",1)) smooth cum w l ls 4 lw 2 ti "Clq" at end, \
 

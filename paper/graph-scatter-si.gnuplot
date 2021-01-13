@@ -30,6 +30,6 @@ getlc(c)=stringcolumn(c)[1:2]eq"si"?1:stringcolumn(c)[1:1]eq"g"?2:stringcolumn(c
 set title "Subgraph Isomorphism"
 
 plot \
-    "<head -n1 runtimes.data ; sed -e 1d runtimes.data | shuf" u (sx("fatanode-results/gss-20210102",1)):(sx("fatanode-results/gss-cliques-20210102",1)):(getpt("instance")):(getlc("instance")) w p pt var lc pal ps 0.5, \
+    "<head -n1 runtimes.data ; sed -e 1d runtimes.data | shuf" u (sx("fatanode-results/gss-20210111",1)):(sx("fatanode-results/gss-cliques-20210111",1)):(getpt("instance")):(getlc("instance")) w p pt var lc pal ps 0.5, \
     x w l ls -1
 

@@ -13,29 +13,29 @@ set format y '%.0f'
 set xrange [1:timeout]
 set yrange [0:14621] noextend
 
-set table 'gen-graph-cumulative-differences-gss-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-20210102",1)):(cy("fatanode-results/gss-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-differences-gss-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-20210111",1)):(cy("fatanode-results/gss-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-differences-gss-cliques-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-cliques-20210102",1)):(cy("fatanode-results/gss-cliques-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-differences-gss-cliques-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-cliques-20210111",1)):(cy("fatanode-results/gss-cliques-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-differences-gss-locallyinjective-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-locallyinjective-20210102",1)):(cy("fatanode-results/gss-locallyinjective-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-differences-gss-locallyinjective-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-locallyinjective-20210111",1)):(cy("fatanode-results/gss-locallyinjective-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-differences-gss-cliques-locallyinjective-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-cliques-locallyinjective-20210102",1)):(cy("fatanode-results/gss-cliques-locallyinjective-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-differences-gss-cliques-locallyinjective-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-cliques-locallyinjective-20210111",1)):(cy("fatanode-results/gss-cliques-locallyinjective-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-differences-gss-noninjective-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-noninjective-20210102",1)):(cy("fatanode-results/gss-noninjective-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-differences-gss-noninjective-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-noninjective-20210111",1)):(cy("fatanode-results/gss-noninjective-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-differences-gss-cliques-noninjective-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-20210102",1)):(cy("fatanode-results/gss-cliques-noninjective-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-differences-gss-cliques-noninjective-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-differences-gss-noninjective-nosupplementals-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-noninjective-nosupplementals-20210102",1)):(cy("fatanode-results/gss-noninjective-nosupplementals-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-differences-gss-noninjective-nosupplementals-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-noninjective-nosupplementals-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-differences-gss-cliques-noninjective-nosupplementals-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-nosupplementals-20210102",1)):(cy("fatanode-results/gss-cliques-noninjective-nosupplementals-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-differences-gss-cliques-noninjective-nosupplementals-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)) smooth cum
 
 unset table
 
@@ -73,9 +73,9 @@ set style fill transparent solid 0.3 noborder
 
 plot \
     0 w l ls -1, \
-    '<./differences gen-graph-cumulative-differences-gss-20210102.data gen-graph-cumulative-differences-gss-cliques-20210102.data' u 1:($3-$2) w l ls 1 ti "SI" at end, \
-    '<./differences gen-graph-cumulative-differences-gss-locallyinjective-20210102.data gen-graph-cumulative-differences-gss-cliques-locallyinjective-20210102.data' u 1:($3-$2) w l ls 4 ti "Local" at end, \
-    '<./differences gen-graph-cumulative-differences-gss-noninjective-nosupplementals-20210102.data gen-graph-cumulative-differences-gss-cliques-noninjective-nosupplementals-20210102.data' u 1:($3-$2) w l ls 7 ti "Hom+C" at end, \
-    '<./differences gen-graph-cumulative-differences-gss-noninjective-nosupplementals-20210102.data gen-graph-cumulative-differences-gss-noninjective-20210102.data' u 1:($3-$2) w l ls 8 ti "Hom+D" at end, \
-    '<./differences gen-graph-cumulative-differences-gss-noninjective-nosupplementals-20210102.data gen-graph-cumulative-differences-gss-cliques-noninjective-20210102.data' u 1:($3-$2) w l ls 9 ti "Hom+CD" at end
+    '<./differences gen-graph-cumulative-differences-gss-20210111.data gen-graph-cumulative-differences-gss-cliques-20210111.data' u 1:($3-$2) w l ls 1 ti "SI" at end, \
+    '<./differences gen-graph-cumulative-differences-gss-locallyinjective-20210111.data gen-graph-cumulative-differences-gss-cliques-locallyinjective-20210111.data' u 1:($3-$2) w l ls 4 ti "Local" at end, \
+    '<./differences gen-graph-cumulative-differences-gss-noninjective-nosupplementals-20210111.data gen-graph-cumulative-differences-gss-cliques-noninjective-nosupplementals-20210111.data' u 1:($3-$2) w l ls 7 ti "Hom+C" at end, \
+    '<./differences gen-graph-cumulative-differences-gss-noninjective-nosupplementals-20210111.data gen-graph-cumulative-differences-gss-noninjective-20210111.data' u 1:($3-$2) w l ls 8 ti "Hom+D" at end, \
+    '<./differences gen-graph-cumulative-differences-gss-noninjective-nosupplementals-20210111.data gen-graph-cumulative-differences-gss-cliques-noninjective-20210111.data' u 1:($3-$2) w l ls 9 ti "Hom+CD" at end
 

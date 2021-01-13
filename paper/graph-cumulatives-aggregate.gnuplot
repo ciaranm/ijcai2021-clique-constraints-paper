@@ -13,27 +13,27 @@ set format y '%.0f'
 set xrange [1:timeout]
 set yrange [0:14621] noextend
 
-set table 'gen-graph-cumulative-aggregate-gss-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-20210102",1)):(cy("fatanode-results/gss-20210102",1)) smooth cum
-set table 'gen-graph-cumulative-aggregate-gss-cliques-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-cliques-20210102",1)):(cy("fatanode-results/gss-cliques-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-aggregate-gss-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-20210111",1)):(cy("fatanode-results/gss-20210111",1)) smooth cum
+set table 'gen-graph-cumulative-aggregate-gss-cliques-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-cliques-20210111",1)):(cy("fatanode-results/gss-cliques-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-aggregate-gss-locallyinjective-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-locallyinjective-20210102",1)):(cy("fatanode-results/gss-locallyinjective-20210102",1)) smooth cum
-set table 'gen-graph-cumulative-aggregate-gss-cliques-locallyinjective-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-cliques-locallyinjective-20210102",1)):(cy("fatanode-results/gss-cliques-locallyinjective-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-aggregate-gss-locallyinjective-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-locallyinjective-20210111",1)):(cy("fatanode-results/gss-locallyinjective-20210111",1)) smooth cum
+set table 'gen-graph-cumulative-aggregate-gss-cliques-locallyinjective-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-cliques-locallyinjective-20210111",1)):(cy("fatanode-results/gss-cliques-locallyinjective-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-aggregate-gss-noninjective-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-noninjective-20210102",1)):(cy("fatanode-results/gss-noninjective-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-aggregate-gss-noninjective-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-noninjective-20210111",1)):(cy("fatanode-results/gss-noninjective-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-aggregate-gss-cliques-noninjective-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-20210102",1)):(cy("fatanode-results/gss-cliques-noninjective-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-aggregate-gss-cliques-noninjective-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-aggregate-gss-noninjective-nosupplementals-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-noninjective-nosupplementals-20210102",1)):(cy("fatanode-results/gss-noninjective-nosupplementals-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-aggregate-gss-noninjective-nosupplementals-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-noninjective-nosupplementals-20210111",1)) smooth cum
 
-set table 'gen-graph-cumulative-aggregate-gss-cliques-noninjective-nosupplementals-20210102.data'
-plot "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-nosupplementals-20210102",1)):(cy("fatanode-results/gss-cliques-noninjective-nosupplementals-20210102",1)) smooth cum
+set table 'gen-graph-cumulative-aggregate-gss-cliques-noninjective-nosupplementals-20210111.data'
+plot "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)) smooth cum
 
 unset table
 
@@ -59,9 +59,9 @@ set style fill transparent solid 0.3 noborder
 
 plot \
     1 w l ls -1, \
-    '<./aggregates gen-graph-cumulative-aggregate-gss-20210102.data gen-graph-cumulative-aggregate-gss-cliques-20210102.data | uniq -f1' u 1:2 w l ls 1 ti "SI" at end, \
-    '<./aggregates gen-graph-cumulative-aggregate-gss-locallyinjective-20210102.data gen-graph-cumulative-aggregate-gss-cliques-locallyinjective-20210102.data | uniq -f1' u 1:2 w l ls 4 ti "Local" at end, \
-    '<./aggregates gen-graph-cumulative-aggregate-gss-noninjective-nosupplementals-20210102.data gen-graph-cumulative-aggregate-gss-cliques-noninjective-nosupplementals-20210102.data | uniq -f1' u 1:2 w l ls 7 ti "Hom+C" at end, \
-    '<./aggregates gen-graph-cumulative-aggregate-gss-noninjective-nosupplementals-20210102.data gen-graph-cumulative-aggregate-gss-noninjective-20210102.data | uniq -f1' u 1:2 w l ls 8 ti "Hom+D" at end, \
-    '<./aggregates gen-graph-cumulative-aggregate-gss-noninjective-nosupplementals-20210102.data gen-graph-cumulative-aggregate-gss-cliques-noninjective-20210102.data | uniq -f1' u 1:2 w l ls 9 ti "Hom+CD" at end
+    '<./aggregates gen-graph-cumulative-aggregate-gss-20210111.data gen-graph-cumulative-aggregate-gss-cliques-20210111.data | uniq -f1' u 1:2 w l ls 1 ti "SI" at end, \
+    '<./aggregates gen-graph-cumulative-aggregate-gss-locallyinjective-20210111.data gen-graph-cumulative-aggregate-gss-cliques-locallyinjective-20210111.data | uniq -f1' u 1:2 w l ls 4 ti "Local" at end, \
+    '<./aggregates gen-graph-cumulative-aggregate-gss-noninjective-nosupplementals-20210111.data gen-graph-cumulative-aggregate-gss-cliques-noninjective-nosupplementals-20210111.data | uniq -f1' u 1:2 w l ls 7 ti "Hom+C" at end, \
+    '<./aggregates gen-graph-cumulative-aggregate-gss-noninjective-nosupplementals-20210111.data gen-graph-cumulative-aggregate-gss-noninjective-20210111.data | uniq -f1' u 1:2 w l ls 8 ti "Hom+D" at end, \
+    '<./aggregates gen-graph-cumulative-aggregate-gss-noninjective-nosupplementals-20210111.data gen-graph-cumulative-aggregate-gss-cliques-noninjective-20210111.data | uniq -f1' u 1:2 w l ls 9 ti "Hom+CD" at end
 
