@@ -29,8 +29,7 @@
 /TemplateVersion (IJCAI.2021.0)
 }
 
-\title{Solving Graph Homomorphism and Subgraph Isomorphism Problems Faster Through Clique Neighbourhood
-Constraints}
+\title{Solving Graph Homomorphism and Subgraph Isomorphism Problems Faster Through Clique Neighbourhood Constraints}
 
 \author{
 Ciaran McCreesh$^1$
@@ -53,7 +52,14 @@ ciaran.mccreesh@glasgow.ac.uk
 \maketitle
 
 \begin{abstract}
-    We can find graph homomorphisms faster through clique constraints.
+    Graph homomorphism problems involve finding adjacency-preserving mappings between two graphs.
+    Many of these problems are theoretically hard, but can be solved quite efficiently in practice
+    through constraint programming techniques.  This paper adapts techniques from the
+    state-of-the-art in subgraph isomorphism solving to broader graph homomorphism problems, and
+    introduces a new form of filtering based upon clique-finding. We evaluate these techniques
+    empirically, and show they are effective in practice for the locally injective graph
+    homomorphism and subgraph isomorphism problems, as well as giving the first practical constraint
+    programming approach to finding general graph homomorphisms.
 \end{abstract}
 
 \section{Introduction}
@@ -82,16 +88,17 @@ assignments without search.
 
 One might hope that this inference would also be helpful for other graph homomorphism problem
 variants. Indeed, this paper proves that many, but not all, of these strategies are also valid in
-the locally injective case, and that a weakened form of one other strategy is valid for all
-homomorphisms. However, we also prove that \emph{none} of the other strategies are valid for finding
+the locally injective case, and that simple distance filtering is valid for all
+homomorphisms. However, we also show that \emph{none} of the other strategies are valid for finding
 homomorphisms where there is no injectivity requirement. Finally, we introduce a new filtering
-technique that is based upon finding the maximum clique in the neighbourhood of each vertex, and
+technique that is based upon finding a maximum clique in the neighbourhood of each pattern vertex, and
 prove that this technique is valid even in the general case. Although this new filtering technique
 involves solving a large number of \NP-complete problems, we demonstrate that it is effective in
-practice, particularly for the non-injective problem where filtering can solve instances ??many
-hundreds of times faster in aggregate. This shows, for the first time, that modern constraint
-programming techniques can be practical for less constrained graph homomorphism finding problems;
-previous algorithmic approaches have focused instead upon worst-case computational bounds
+practice, particularly for the non-injective problem where filtering allows a constraint programming
+algorithm to solve instances over eight hundred times faster in aggregate, over a collection of over
+fourteen thousand standard benchmark instances. This shows, for the first time, that modern
+constraint programming techniques can be practical for less constrained graph homomorphism finding
+problems; previous algorithmic approaches have focused instead upon worst-case computational bounds
 \cite{DBLP:journals/csr/FialaK08,DBLP:journals/ipl/Rzazewski14,DBLP:journals/tcs/ChaplickFHPT15},
 whose practical utility has yet to be demonstrated. The empirical effectiveness of our results is
 especially important because many current applications use subgraph isomorphism solvers only because
@@ -138,7 +145,7 @@ for finding homomorphisms relies upon exploiting various invariants. It is strai
 \end{proposition}
 Since subgraph isomorphisms are in particular locally injective, these also hold for subgraph isomorphisms \cite{DBLP:journals/constraints/ZampelliDS10}.
 Every recent
-constraint programming solver makes use of the of the above invariants for subgraph isomowphisms.
+constraint programming solver makes use of the of the above invariants for subgraph isomorphisms.
 However, these invariants do \emph{not} hold for homomorphisms in general. As a simple counter-example, a
 homomorphism may map a star graph (one central vertex of high degree, which is adjacent to many
 other vertices, each of which has no other neighbours) onto a single edge.
