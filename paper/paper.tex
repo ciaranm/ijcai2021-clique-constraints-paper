@@ -17,11 +17,18 @@
 \urlstyle{same}
 
 \usepackage{cleveref}
+\crefname{figure}{figure}{figures}
+\Crefname{figure}{Figure}{Figures}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes}
 
 % \usepackage{showframe}
 
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
+
+\newcommand{\citet}[1]{\citeauthor{#1} \shortcite{#1}}
 
 \usepackage{complexity}
 
@@ -126,12 +133,26 @@ homomorphism $h$ is \emph{locally injective} if for every vertex $w$, the restri
 $G[N_G[w]]$ is injective; if $h$ is injective globally we call it a \emph{(non-induced) subgraph
 isomorphism}.
 
-?? loops, be really careful with this
+\paragraph{Loops.} A vertex which is adjacent to itself is called a \emph{loop}. By a careful reading
+of the definition, any homomorphism must map loops onto loops---and indeed, the Glasgow Subgraph
+Solver and this paper take this approach (although some other algorithm implementations do not). It
+therefore follows that for the homomorphism \emph{decision} problem where there are no injectivity
+constraints, any problem instance which has a loop in the codomain graph is trivially satisfiable,
+although the \emph{counting} problem remains \#\P-hard \cite{DBLP:journals/rsa/DyerG00}.
 
-\paragraph{Constraint programming.} ?? A constraint programming algorithm.
+\paragraph{Constraint programming.} A \emph{constraint satisfaction problem} is defined in terms of
+a set of \emph{variables}, each of which has a \emph{domain} of possible \emph{values}, together
+with a set of constraints; the goal is to give each variable a value from its domain, whilst
+satisfying all of the constraints. Homomorphism problems have a natural representation as a
+constraint satisfaction problem: we have a variable for each vertex in the domain graph, whose
+values range over the codomain graph, and a set of constraints saying that adjacent vertices must be
+mapped to adjacent vertices. For the injective variants, one or more \emph{all-different}
+constraints are also present. A typical constraint programming approach to solving such a problem is
+to combine inference through constraint propagation with an intelligent backtracking search.
 
-\paragraph{Degree-based invariants for homomorphisms.} The use of constraint programming techniques
-for finding homomorphisms relies upon exploiting various invariants. It is straightforward to verify the following.
+\paragraph{Degree-based invariants for homomorphisms.} Constraint programming techniques for finding
+homomorphisms can be made much more effective by exploiting certain invariants. It is
+straightforward to verify the following.
 
 \begin{proposition}\label{proposition:degreends}
     Suppose  $i$ is a locally injective homomorphism from a $G$ to  $H$. Let
@@ -139,29 +160,146 @@ for finding homomorphisms relies upon exploiting various invariants. It is strai
     \begin{enumerate}
         \item $i$ cannot map $v$ to a vertex of lower degree, $\degree_G(v) \le \degree_H(i(v))$.
         \item Furthermore, $v$ cannot be mapped to any vertex whose neighbourhood degree sequence is
-            not pointwise greater than or equal to its own
-           .
+            not pointwise greater than or equal to its own.
     \end{enumerate}
 \end{proposition}
-Since subgraph isomorphisms are in particular locally injective, these also hold for subgraph isomorphisms \cite{DBLP:journals/constraints/ZampelliDS10}.
-Every recent
-constraint programming solver makes use of the of the above invariants for subgraph isomorphisms.
-However, these invariants do \emph{not} hold for homomorphisms in general. As a simple counter-example, a
-homomorphism may map a star graph (one central vertex of high degree, which is adjacent to many
-other vertices, each of which has no other neighbours) onto a single edge.
-
-The simplest way for a constraint programming algorithm to use these results is as unary
+Since subgraph isomorphisms are in particular locally injective, these invariants also hold for
+subgraph isomorphisms \cite{DBLP:journals/constraints/ZampelliDS10}; indeed, every recent constraint
+programming approach for subgraph isomorphism finding make use of degrees and neighbourhood degree
+sequences. The simplest way for a constraint programming algorithm to use these results is as unary
 constraints, which are propagated when domains are initialised, before search begins. For each
 domain representing a pattern vertex, any value representing target vertex whose degree or
 neighbourhood degree sequence is too low may immediately be rejected.
+
+\begin{figure}
+    \hfill\,\begin{minipage}{3cm}
+    \begin{tikzpicture}
+        \node [draw, fill, circle, inner sep=1.5pt] (A1) at (0, 0) {};
+        \node [draw, circle, inner sep=1.5pt] (A2) at (0:0.3) {};
+        \node [draw, circle, inner sep=1.5pt] (A3) at (60:0.3) {};
+        \node [draw, circle, inner sep=1.5pt] (A4) at (120:0.3) {};
+        \node [draw, circle, inner sep=1.5pt] (A5) at (180:0.3) {};
+        \node [draw, circle, inner sep=1.5pt] (A6) at (240:0.3) {};
+        \node [draw, circle, inner sep=1.5pt] (A7) at (300:0.3) {};
+
+        \draw (A1) -- (A2);
+        \draw (A1) -- (A3);
+        \draw (A1) -- (A4);
+        \draw (A1) -- (A5);
+        \draw (A1) -- (A6);
+        \draw (A1) -- (A7);
+
+        \draw [->] (0.7, 0) -- (1.1, 0);
+
+        \draw (1.5, 0) node [draw, fill, circle, inner sep=1.5pt] (B1) at ++ (90:0.15) {};
+        \draw (1.5, 0) node [draw, circle, inner sep=1.5pt] (B2) at ++ (270:0.15) {};
+        \draw (B1) -- (B2);
+    \end{tikzpicture}\end{minipage}\hfill\begin{minipage}{3cm}
+    \begin{tikzpicture}
+        \node [draw, fill, circle, inner sep=1.5pt] (A1) at (0, 0) {};
+        \node [draw, inner sep=1.5pt] (A2) at (0.3, 0) {};
+        \node [draw, inner sep=1.5pt] (A3) at (0.3, -0.2) {};
+        \node [draw, inner sep=1.5pt] (A4) at (0.3, 0.2) {};
+        \node [draw, circle, inner sep=1.5pt] (A5) at (0.6, 0) {};
+
+        \draw (A1) -- (A2);
+        \draw (A1) -- (A3);
+        \draw (A1) -- (A4);
+        \draw (A2) -- (A5);
+        \draw (A3) -- (A5);
+        \draw (A4) -- (A5);
+
+        \draw [->] (1.0, 0) -- (1.4, 0);
+
+        \node [draw, fill, circle, inner sep=1.5pt] (B1) at (1.8, 0) {};
+        \node [draw, inner sep=1.5pt] (B2) at (2.1, 0) {};
+        \node [draw, circle, inner sep=1.5pt] (B5) at (2.4, 0) {};
+
+        \draw (B1) -- (B2);
+        \draw (B2) -- (B5);
+    \end{tikzpicture}\end{minipage}\hfill\,
+
+    \bigskip
+
+    \,\hfill\begin{minipage}{3cm}
+    \begin{tikzpicture}
+        \node [draw, fill, circle, inner sep=1.5pt] (A1) at (0, 0) {};
+        \node [draw, circle, inner sep=1.5pt] (A2) at (0.3, 0) {};
+        \node [draw, inner sep=1.5pt] (A3) at (0.6, 0) {};
+        \node [draw, fill, circle, inner sep=1.5pt] (A4) at (0.9, 0) {};
+
+        \draw (A1) -- (A2);
+        \draw (A2) -- (A3);
+        \draw (A3) -- (A4);
+
+        \draw [->] (1.3, 0) -- (1.7, 0);
+
+        \draw (2.2, 0) node [draw, fill, circle, inner sep=1.5pt] (B1) at ++ (120:0.3) {};
+        \draw (2.2, 0) node [draw, circle, inner sep=1.5pt] (B2) at ++ (240:0.3) {};
+        \draw (2.2, 0) node [draw, inner sep=1.5pt] (B3) at ++ (0:0.3) {};
+
+        \draw (B1) -- (B2);
+        \draw (B2) -- (B3);
+        \draw (B3) -- (B1);
+    \end{tikzpicture}\end{minipage}\hfill\begin{minipage}{3cm}
+        \begin{tikzpicture}
+        \node [draw, fill, circle, inner sep=1.5pt] (A1) at (0, 0) {};
+        \node [draw, inner sep=1.5pt] (A2) at (0.3, -0.2) {};
+        \node [draw, fill, inner sep=1.5pt] (A3) at (0.3, 0.2) {};
+        \node [draw, circle, inner sep=1.5pt] (A4) at (0.6, 0) {};
+        \node [draw, diamond, fill, inner sep=1.5pt] (A5) at (0.9, -0.2) {};
+        \node [draw, diamond, inner sep=1.5pt] (A6) at (0.9, 0.2) {};
+        \node [draw, fill, circle, inner sep=1.5pt] (A7) at (1.2, 0) {};
+
+        \draw (A1) -- (A2);
+        \draw (A1) -- (A3);
+        \draw (A2) -- (A4);
+        \draw (A3) -- (A4);
+        \draw (A4) -- (A5);
+        \draw (A4) -- (A6);
+        \draw (A5) -- (A7);
+        \draw (A6) -- (A7);
+
+        \draw [->] (1.4, 0) -- (1.7, 0);
+
+        \node [draw, fill, circle, inner sep=1.5pt] (B1) at (2, 0) {};
+        \node [draw, fill, inner sep=1.5pt] (B2) at (2.3, -0.15) {};
+        \node [draw, diamond, inner sep=1.5pt] (B3) at (2.3, 0.15) {};
+        \node [draw, diamond, fill, inner sep=1.5pt] (B4) at (2.3, -0.45) {};
+        \node [draw, inner sep=1.5pt] (B5) at (2.3, 0.45) {};
+        \node [draw, circle, inner sep=1.5pt] (B6) at (2.6, 0) {};
+
+        \draw (B1) -- (B2);
+        \draw (B1) -- (B3);
+        \draw (B1) -- (B4);
+        \draw (B1) -- (B5);
+        \draw (B6) -- (B2);
+        \draw (B6) -- (B3);
+        \draw (B6) -- (B4);
+        \draw (B6) -- (B5);
+    \end{tikzpicture}\end{minipage}\hfill\,
+
+    \caption{Counter-examples for various properties which are not invariants. The different shapes
+        for vertices show a mapping, with vertices being mapped to vertices of the same shape. The
+        top left example shows that degree is not preserved in a homomorphism; the top right that path
+        counts are not preserved in a homomorphism; the bottom left that path counts of length three
+        are not preserved in a locally injective homomorphism; and the bottom right that a locally
+        injective homomorphism $i$ can give rise to a homomorphism $i^{2,2}$ which is not locally
+        injective.} \label{figure:counterexamples}
+\end{figure}
+
+However, these invariants do \emph{not} hold for homomorphisms in general. As a simple
+counter-example, a homomorphism may map a star graph onto a single edge, as in
+\cref{figure:counterexamples} (top left).
 
 \paragraph{Path-based invariants for homomorphisms.} Constraint programming solvers can also exploit
 invariants that are based upon paths. This is done by automatically adding \emph{implied}
 constraints to the problem that are implied by the original model, but that will give stronger
 propagation power.
 
-\begin{proposition}For the problem of finding a subgraph isomorphism $i$ from a graph $G$ to a graph
-    $H$, the following constraints are implied for any pair of vertices $v, w \in \vertexset(G)$:
+\begin{proposition}\label{proposition:distances}For the problem of finding a subgraph isomorphism
+    $i$ from a graph $G$ to a graph $H$, the following constraints are implied for any pair of
+    vertices $v, w \in \vertexset(G)$:
     \begin{enumerate}
         \item The distance between $v$ and $w$ is at least the distance between $i(v)$ and $i(w)$
             \cite{DBLP:conf/cp/AudemardLMGP14}.
@@ -175,14 +313,16 @@ propagation power.
 It is easy to verify that the first of these two properties is valid for \emph{any} homomorphism.
 The second property does not hold for homomorphisms in general: for example, a pair of vertices
 connected by three paths of length two may be mapped onto a pair of vertices connected by a single
-path of length two. Local injectivity is trickier. The second property does not hold in full
-generality, because, for example, a path of length three may be mapped onto a triangle whilst
-respecting local injectivity. However, a weaker result holds:
+path of length two (see \cref{figure:counterexamples}, top right). Local injectivity is trickier.
+The second property does not hold in full generality, because, for example, a path of length three
+may be mapped onto a triangle whilst respecting local injectivity (\cref{figure:counterexamples},
+bottom left).  However, we observe that a weaker result holds:
 
-\begin{proposition}For the problem of finding a locally injective graph homomorphism $i$ from a
-    graph $G$ to a graph $H$, for any pair of vertices $v, w \in \vertexset(G)$, if there are at
-    least $k$ simple paths of length exactly two between $v$ and $w$, then there must be at least
-    $k$ simple paths of length exactly two between $i(v)$ and $i(w)$.
+\begin{proposition}\label{proposition:paths}For the problem of finding a locally injective graph
+    homomorphism $i$ from a graph $G$ to a graph $H$, for any pair of vertices $v, w \in
+    \vertexset(G)$, if there are at least $k$ simple paths of length exactly two between $v$ and
+    $w$, then there must be at least $k$ simple paths of length exactly two between $i(v)$ and
+    $i(w)$.
 \end{proposition}
 
 \begin{proof}Let $\{ x_1, \ldots, x_n \}$ be the intermediate vertices on the paths of length two
@@ -190,7 +330,26 @@ between $v$ and $w$. Observe that each $x_j$ is in the neighbourhood of $v$, and
     to different vertices. Thus each sequence $(i(v), i(x_i), i(w))$ gives a distinct simple path of
 length two between $i(v)$ and $i(w)$ as required.\end{proof}
 
-?? Corollary: $G^d$ graphs.
+Rather than using distance properties directly, \citet{DBLP:conf/cp/McCreeshP15} introduced
+the notion of \emph{supplemental} graphs, with the idea that a constraint programming algorithm can
+search for a mapping which is simultaneously a subgraph isomorphism between several different pairs
+of graphs. Let $G^d$ be the graph with the same set of vertices as $G$, but an edge between vertices
+$v$ and $w$ if the distance between $v$ and $w$ in $G$ is at most $d$.  Similarly, let $G^{n,\ell}$
+be the graph with the same set of vertices as $G$, but an edge between vertices $v$ and $w$ if there
+are at least $n$ simple paths of length exactly $\ell$ between $v$ and $w$ in $G$. Following on from
+\cref{proposition:distances,proposition:paths}, we generalise the result of
+\citeauthor{DBLP:conf/cp/McCreeshP15} as follows.
+
+\begin{corollary}Any homomorphism $i$ from $G$ to $H$ gives a homomorphism $i^d$ from $G^d$ to $H^d$
+    defined by $i^d(v) = i(v)$, for all $d$. Furthermore, if $i$ is locally injective, then for all
+    $n$, there is a homomorphism $i^{n,2}$ from $G^{n,2}$ to
+    $H^{n,2}$ defined by $i^{n,2}(v) = i(v)$.
+\end{corollary}
+
+Note carefully that $i^{n,2}$ is \emph{not} necessarily locally injective, even if $i$ is; we
+illustrate a counter-example in \cref{figure:counterexamples} (bottom right). This is in contrast to
+subgraph isomorphism, where $i^{n,\ell}$ is a subgraph isomorphism for all $\ell$
+\cite{DBLP:conf/cp/McCreeshP15}.
 
 \paragraph{Cliques and homomorphisms.} Finally, we come to the main result of this paper. Observe
 that until now, we have not seen any unary constraints which are valid for the general homomorphism
@@ -205,7 +364,8 @@ This motivates the following observation.
 
 \begin{proposition}[Cliques are preserved]\label{proposition:clique}
     Let $i$ be a homomorphism from $G$ to $H$ where $H$ does
-    not contain any loops. Let $S\subset V$ be such that $G[S]=K_k$. Then $H[i(S)]=K_k$. 
+    not contain any loops. Let $S\subset V$ be such that $G[S]$ is a $k$-vertex clique. Then
+    $H[i(S)]$ is also a $k$-vertex clique.
 \end{proposition}
 
 \begin{proof}
@@ -327,6 +487,8 @@ We now evaluate this approach empirically.
 \section{Conclusion and Future Work}
 
 ?? Neighbourhood colourability? Cores?
+
+?? Epimorphism
 
 \section*{Acknowledgements}
 
