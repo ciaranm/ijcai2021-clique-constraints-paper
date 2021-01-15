@@ -95,17 +95,18 @@ assignments without search.
 
 One might hope that this inference would also be helpful for other graph homomorphism problem
 variants. Indeed, this paper proves that many, but not all, of these strategies are also valid in
-the locally injective case, and that simple distance filtering is valid for all
-homomorphisms. However, we also show that \emph{none} of the other strategies are valid for finding
-homomorphisms where there is no injectivity requirement. Finally, we introduce a new filtering
-technique that is based upon finding a maximum clique in the neighbourhood of each pattern vertex, and
-prove that this technique is valid even in the general case. Although this new filtering technique
-involves solving a large number of \NP-complete problems, we demonstrate that it is effective in
-practice, particularly for the non-injective problem where filtering allows a constraint programming
-algorithm to solve instances over eight hundred times faster in aggregate, over a collection of over
-fourteen thousand standard benchmark instances. This shows, for the first time, that modern
-constraint programming techniques can be practical for less constrained graph homomorphism finding
-problems; previous algorithmic approaches have focused instead upon worst-case computational bounds
+the locally injective case, and that simple distance filtering is valid for all homomorphisms.
+However, we also show that \emph{none} of the other strategies are valid for finding homomorphisms
+where there is no injectivity requirement. Finally, we introduce a new filtering technique that is
+based upon finding a maximum clique in the neighbourhood of each pattern vertex, and prove that this
+technique is valid even in the general case. Although this new filtering technique involves solving
+many additional \NP-complete problems as a preprocessing step, we demonstrate that it is effective
+in practice, particularly for the non-injective problem where filtering allows a constraint
+programming algorithm to solve instances over eight hundred times faster in aggregate, over a
+collection of over fourteen thousand standard benchmark instances. This shows, for the first time,
+that modern constraint programming techniques can be practical for less constrained graph
+homomorphism finding problems; previous algorithmic approaches have focused instead upon worst-case
+computational bounds
 \cite{DBLP:journals/csr/FialaK08,DBLP:journals/ipl/Rzazewski14,DBLP:journals/tcs/ChaplickFHPT15},
 whose practical utility has yet to be demonstrated. The empirical effectiveness of our results is
 especially important because many current applications use subgraph isomorphism solvers only because
@@ -154,7 +155,7 @@ to combine inference through constraint propagation with an intelligent backtrac
 homomorphisms can be made much more effective by exploiting certain invariants. It is
 straightforward to verify the following.
 
-\begin{proposition}\label{proposition:degreends}
+\begin{proposition}[neighbourhood degree sequences are preserved]\label{proposition:degreends}
     Suppose  $i$ is a locally injective homomorphism from a $G$ to  $H$. Let
     $v$ be any vertex. Then:
     \begin{enumerate}
@@ -168,7 +169,7 @@ subgraph isomorphisms \cite{DBLP:journals/constraints/ZampelliDS10}; indeed, eve
 programming approach for subgraph isomorphism finding make use of degrees and neighbourhood degree
 sequences. The simplest way for a constraint programming algorithm to use these results is as unary
 constraints, which are propagated when domains are initialised, before search begins. For each
-domain representing a pattern vertex, any value representing target vertex whose degree or
+domain representing a pattern vertex, any value representing a target vertex whose degree or
 neighbourhood degree sequence is too low may immediately be rejected.
 
 \begin{figure}
@@ -297,9 +298,9 @@ invariants that are based upon paths. This is done by automatically adding \emph
 constraints to the problem that are implied by the original model, but that will give stronger
 propagation power.
 
-\begin{proposition}\label{proposition:distances}For the problem of finding a subgraph isomorphism
-    $i$ from a graph $G$ to a graph $H$, the following constraints are implied for any pair of
-    vertices $v, w \in \vertexset(G)$:
+\begin{proposition}[paths are preserved by subgraph isomorphisms]\label{proposition:distances}For
+    the problem of finding a subgraph isomorphism $i$ from a graph $G$ to a graph $H$, the following
+    constraints are implied for any pair of vertices $v, w \in \vertexset(G)$:
     \begin{enumerate}
         \item The distance between $v$ and $w$ is at least the distance between $i(v)$ and $i(w)$
             \cite{DBLP:conf/cp/AudemardLMGP14}.
@@ -318,7 +319,8 @@ The second property does not hold in full generality, because, for example, a pa
 may be mapped onto a triangle whilst respecting local injectivity (\cref{figure:counterexamples},
 bottom left).  However, we observe that a weaker result holds:
 
-\begin{proposition}\label{proposition:paths}For the problem of finding a locally injective graph
+\begin{proposition}[paths of length two are preserved by locally injective
+    homomorphisms]\label{proposition:paths}For the problem of finding a locally injective graph
     homomorphism $i$ from a graph $G$ to a graph $H$, for any pair of vertices $v, w \in
     \vertexset(G)$, if there are at least $k$ simple paths of length exactly two between $v$ and
     $w$, then there must be at least $k$ simple paths of length exactly two between $i(v)$ and
@@ -327,7 +329,7 @@ bottom left).  However, we observe that a weaker result holds:
 
 \begin{proof}Let $\{ x_1, \ldots, x_n \}$ be the intermediate vertices on the paths of length two
 between $v$ and $w$. Observe that each $x_j$ is in the neighbourhood of $v$, and so must be mapped
-    to different vertices. Thus each sequence $(i(v), i(x_i), i(w))$ gives a distinct simple path of
+    to different vertices. Thus each sequence $(i(v), i(x_j), i(w))$ gives a distinct simple path of
 length two between $i(v)$ and $i(w)$ as required.\end{proof}
 
 Rather than using distance properties directly, \citet{DBLP:conf/cp/McCreeshP15} introduced
