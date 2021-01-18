@@ -15,10 +15,10 @@ set xtics nomirror
 set ytics nomirror
 set key off
 set xrange [1e3:timeout]
-set yrange [14050:14550] noextend
+set yrange [14000:14600] noextend
 set logscale x
 set format x '$10^{%T}$'
-set xtics add ('1h' 3600e3)
+set xtics add ('~1h' 3600e3)
 
 cx(s,m)=stringcolumn(s)eq"NaN"?timeout:column(s)*m>=timeout?timeout:column(s)*m
 cy(s,m)=stringcolumn(s)eq"NaN"?1e-10:column(s)*m>=timeout?1e-10:1
@@ -28,8 +28,8 @@ set style fill transparent solid 0.3 noborder
 set title "Homomorphism"
 
 plot \
-    "runtimes.data" u (cx("fatanode-results/gss-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-noninjective-nosupplementals-20210111",1)) smooth cum w l ls 7 lw 1 ti "None" at end, \
-    "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)) smooth cum w l ls 7 lw 2 ti "Clq" at end, \
-    "runtimes.data" u (cx("fatanode-results/gss-noninjective-20210111",1)):(cy("fatanode-results/gss-noninjective-20210111",1)) smooth cum w l ls 8 lw 2 ti "Dist" at end, \
-    "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-20210111",1)) smooth cum w l ls 8 lw 3 ti "Both" at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-noninjective-nosupplementals-20210111",1)) smooth cum w l ls 7 lw 1 ti "H" at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)) smooth cum w l ls 7 lw 2 ti "H+Clq" at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-noninjective-20210111",1)):(cy("fatanode-results/gss-noninjective-20210111",1)) smooth cum w l ls 8 lw 2 ti "H+Dst" at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-20210111",1)) smooth cum w l ls 9 lw 3 ti "H+Both" at end, \
 
