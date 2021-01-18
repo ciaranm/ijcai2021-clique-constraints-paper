@@ -15,7 +15,10 @@
 \usepackage{algorithm}
 \usepackage{algorithmic}
 \urlstyle{same}
-
+\usepackage[textsize=tiny,textwidth=2cm,shadow]{todonotes}
+	
+\newcommand{\skcom}[1]{\todo[color=orange!50!white]{{S}: #1}}
+\newcommand{\rcom}[1]{\todo[color=gray!50!white]{{R}: #1}}%reviewers said
 \usepackage{cleveref}
 \crefname{figure}{figure}{figures}
 \Crefname{figure}{Figure}{Figures}
@@ -74,8 +77,8 @@ ciaran.mccreesh@glasgow.ac.uk
 A \emph{graph homomorphism} is a function between two graphs that maps adjacent vertices to adjacent
 vertices. An injective graph homomorphism is more commonly known as a \emph{subgraph isomorphism},
 whilst a \emph{locally injective homomorphism} is one which is injective when restricted to any
-individual vertex and its neighbourhood \cite{DBLP:journals/csr/FialaK08}. Finding any of these three kinds of homomorphism between
-two given graphs is \NP-complete.  The subgraph isomorphism problem arises in many practical
+individual vertex and its neighbourhood \cite{DBLP:journals/csr/FialaK08}.\skcom{It seems a little bit strange to start with a definition. How about we describe it more wordy in the introduction? Or maybe I would start motivating with subgraph isomorphism(which has an easy definition i words) and the fact that this doesnt ideally match many causes... and then go to the definition of general homomorphism? } Finding any of these three kinds of homomorphism between
+two given graphs is \NP-complete\skcom{cite a proof of this}.  The subgraph isomorphism problem arises in many practical
 applications, including ??, and as such there has been a lot of research into finding algorithms
 which perform well empirically. Most approaches are based either upon very fast but simple
 backtracking algorithms,
@@ -98,8 +101,8 @@ variants. Indeed, this paper proves that many, but not all, of these strategies 
 the locally injective case, and that simple distance filtering is valid for all homomorphisms.
 However, we also show that \emph{none} of the other strategies are valid for finding homomorphisms
 where there is no injectivity requirement. Finally, we introduce a new filtering technique that is
-based upon finding a maximum clique in the neighbourhood of each pattern vertex, and prove that this
-technique is valid even in the general case. Although this new filtering technique involves solving
+based upon finding a maximum clique in the neighbourhood of each pattern vertex, a
+technique, that is valid even in the general case.\skcom{I wouldnt emphasize so much that "we prove" - its a common result and also pretty immediate..} Although this new filtering technique involves solving
 many additional \NP-complete problems as a preprocessing step, we demonstrate that it is effective
 in practice, particularly for the non-injective problem where filtering allows a constraint
 programming algorithm to solve instances over eight hundred times faster in aggregate, over a
@@ -314,8 +317,8 @@ propagation power.
 It is easy to verify that the first of these two properties is valid for \emph{any} homomorphism.
 The second property does not hold for homomorphisms in general: for example, a pair of vertices
 connected by three paths of length two may be mapped onto a pair of vertices connected by a single
-path of length two (see \cref{figure:counterexamples}, top right). Local injectivity is trickier.
-The second property does not hold in full generality, because, for example, a path of length three
+path of length two (see \cref{figure:counterexamples}, top right). While standard injectivity prevents any kind of merging, local injectivity prevents two vertices from being merged, only if they are both in the neighbourhood of the same vertex.\skcom{added this}
+So the second property does not hold in full generality, because, for example, a path of length three
 may be mapped onto a triangle whilst respecting local injectivity (\cref{figure:counterexamples},
 bottom left).  However, we observe that a weaker result holds:
 
@@ -325,7 +328,7 @@ bottom left).  However, we observe that a weaker result holds:
     \vertexset(G)$, if there are at least $k$ simple paths of length exactly two between $v$ and
     $w$, then there must be at least $k$ simple paths of length exactly two between $i(v)$ and
     $i(w)$.
-\end{proposition}
+\end{proposition}\skcom{I am unsure whether not to write a general statement combining this and proposition 2.2.. but maybe that}
 
 \begin{proof}Let $\{ x_1, \ldots, x_n \}$ be the intermediate vertices on the paths of length two
 between $v$ and $w$. Observe that each $x_j$ is in the neighbourhood of $v$, and so must be mapped
@@ -378,7 +381,8 @@ This motivates the following observation.
 
 \begin{corollary}\Cref{proposition:clique} holds for locally injective graph homomorphisms and for
     subgraph isomorphisms even if loops are present in the second graph.
-\end{corollary}
+\end{corollary}\skcom{Do you think we should say it or just state in the definition sections that both of these '
+\textit{are} homomorphisms}
 
 We will discuss how this is useful in practice in the following section.
 
@@ -410,9 +414,9 @@ We calculate the maximum clique size for the neighbourhood of a first pattern ve
 found a maximum clique $\omega_1$ for a vertex $p$, for every other vertex $q \in \omega_1$, we
 remember that the maximum clique for $q$'s neighbourhood has at least $|\omega_1|$ vertices. We then
 proceed to find a maximum clique $\omega_2$ for a second pattern vertex $p_2$; however, if $p_2$ was
-a member of $\omega_1$, we initialise the clique solver with a lower bound of $n$ rather than
+a member of $\omega_1$, we initialise the clique solver with a lower bound of $n$\skcom{why n?} rather than
 starting from scratch. We then find the maximum clique size for a third pattern vertex $p_3$, using
-whichever lower bound of $|\omega_1|$ and $|\omega_2|$ is better (if both are valid), and so on.
+whichever lower bound of $|\omega_1|$ and $|\omega_2|$ is better (if both are valid), and so on.\skcom{I think after you state the first example we can just say that in general, For vertex v, we take the largest lowerbound of maxclique values in its neighbourhood (initialise to 0)?}\skcom{Maybe explicitly say in which order we take the vertices?}
 
 We then move on to the target vertices, using a similar caching routine. Rather than calculating a
 clique size for every single target vertex, we only calculate a value for target vertices which are
@@ -423,7 +427,7 @@ Additionally, we do not require the maximum clique solver to run to completion a
 has found a maximum clique. Instead, we allow it to stop as soon as it has found a clique with as
 many vertices as the largest pattern clique. This is useful in practice because it may be very hard
 to decide whether a particular target vertex has neighbourhood clique size of, say, 15 or 16, but if
-the largest pattern vertex has a neighbourhood clique size of only 5 then this is irrelevant.
+the largest pattern vertex has a neighbourhood clique size of only 5 then this is irrelevant.\skcom{I would change this bit. I think it should be clear that on the second graph we \textit{dont} find a maximum clique, but what we want (for our cliques are preserved constraint) is cliques$\geq$ max size in the pattern vertex or in general of at least the sizes we find in the pattern vertex}
 
 ?? Why this works
 
