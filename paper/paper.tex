@@ -26,7 +26,7 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes}
 
-% \usepackage{showframe}
+\usepackage{showframe}
 
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
@@ -75,13 +75,14 @@ ciaran.mccreesh@glasgow.ac.uk
 \section{Introduction}
 
 A \emph{graph homomorphism} is a function between two graphs that maps adjacent vertices to adjacent
-vertices. An injective graph homomorphism is more commonly known as a \emph{subgraph isomorphism},
-whilst a \emph{locally injective homomorphism} is one which is injective when restricted to any
-individual vertex and its neighbourhood \cite{DBLP:journals/csr/FialaK08}.\skcom{It seems a little bit strange to start with a definition. How about we describe it more wordy in the introduction? Or maybe I would start motivating with subgraph isomorphism(which has an easy definition i words) and the fact that this doesnt ideally match many causes... and then go to the definition of general homomorphism? } Finding any of these three kinds of homomorphism between
-two given graphs is \NP-complete\skcom{cite a proof of this}.  The subgraph isomorphism problem arises in many practical
-applications, including ??, and as such there has been a lot of research into finding algorithms
-which perform well empirically. Most approaches are based either upon very fast but simple
-backtracking algorithms,
+vertices. An injective graph homomorphism is more commonly known as a \emph{subgraph isomorphism}, a
+\emph{locally injective homomorphism} is one which is injective when restricted to any individual
+vertex and its neighbourhood \cite{DBLP:journals/csr/FialaK08}, and a homomorphism which is
+surjective on edges is known as an \emph{epimorphism} \cite{DBLP:journals/dam/GayFMSS14}. Finding
+any of these kinds of homomorphism between two given graphs is \NP-complete.  The subgraph
+isomorphism problem arises in many practical applications, including ??, and as such there has been
+a lot of research into finding algorithms which perform well empirically. Most approaches are based
+either upon very fast but simple backtracking algorithms
 \cite{DBLP:journals/pami/CordellaFSV04,DBLP:journals/bmcbi/BonniciGPSF13,DBLP:conf/gbrpr/CarlettiFSV17}
 which often but not always perform well on very easy instances, or upon constraint programming
 algorithms
@@ -101,8 +102,8 @@ variants. Indeed, this paper proves that many, but not all, of these strategies 
 the locally injective case, and that simple distance filtering is valid for all homomorphisms.
 However, we also show that \emph{none} of the other strategies are valid for finding homomorphisms
 where there is no injectivity requirement. Finally, we introduce a new filtering technique that is
-based upon finding a maximum clique in the neighbourhood of each pattern vertex, a
-technique, that is valid even in the general case.\skcom{I wouldnt emphasize so much that "we prove" - its a common result and also pretty immediate..} Although this new filtering technique involves solving
+based upon finding a maximum clique in the neighbourhood of each domain vertex, which
+is valid even in the general case. Although this new filtering technique involves solving
 many additional \NP-complete problems as a preprocessing step, we demonstrate that it is effective
 in practice, particularly for the non-injective problem where filtering allows a constraint
 programming algorithm to solve instances over eight hundred times faster in aggregate, over a
@@ -154,7 +155,7 @@ mapped to adjacent vertices. For the injective variants, one or more \emph{all-d
 constraints are also present. A typical constraint programming approach to solving such a problem is
 to combine inference through constraint propagation with an intelligent backtracking search.
 
-\paragraph{Degree-based invariants for homomorphisms.} Constraint programming techniques for finding
+\paragraph{Degree-based invariants.} Constraint programming techniques for finding
 homomorphisms can be made much more effective by exploiting certain invariants. It is
 straightforward to verify the following.
 
@@ -172,7 +173,7 @@ subgraph isomorphisms \cite{DBLP:journals/constraints/ZampelliDS10}; indeed, eve
 programming approach for subgraph isomorphism finding make use of degrees and neighbourhood degree
 sequences. The simplest way for a constraint programming algorithm to use these results is as unary
 constraints, which are propagated when domains are initialised, before search begins. For each
-domain representing a pattern vertex, any value representing a target vertex whose degree or
+domain representing a domain vertex, any value representing a codomain vertex whose degree or
 neighbourhood degree sequence is too low may immediately be rejected.
 
 \begin{figure}
@@ -296,7 +297,7 @@ However, these invariants do \emph{not} hold for homomorphisms in general. As a 
 counter-example, a homomorphism may map a star graph onto a single edge, as in
 \cref{figure:counterexamples} (top left).
 
-\paragraph{Path-based invariants for homomorphisms.} Constraint programming solvers can also exploit
+\paragraph{Path-based invariants.} Constraint programming solvers can also exploit
 invariants that are based upon paths. This is done by automatically adding \emph{implied}
 constraints to the problem that are implied by the original model, but that will give stronger
 propagation power.
@@ -348,7 +349,7 @@ are at least $n$ simple paths of length exactly $\ell$ between $v$ and $w$ in $G
 \begin{corollary}Any homomorphism $i$ from $G$ to $H$ gives a homomorphism $i^d$ from $G^d$ to $H^d$
     defined by $i^d(v) = i(v)$, for all $d$. Furthermore, if $i$ is locally injective, then for all
     $n$, there is a homomorphism $i^{n,2}$ from $G^{n,2}$ to
-    $H^{n,2}$ defined by $i^{n,2}(v) = i(v)$.
+    $H^{n,2}$ defined by $i^{n,2}(v) = i(v)$.\label{corollary:lishapes}
 \end{corollary}
 
 Note carefully that $i^{n,2}$ is \emph{not} necessarily locally injective, even if $i$ is; we
@@ -360,7 +361,7 @@ subgraph isomorphism, where $i^{n,\ell}$ is a subgraph isomorphism for all $\ell
 that until now, we have not seen any unary constraints which are valid for the general homomorphism
 problem. All existing constraint programming approaches for the subgraph isomorphism problem begin
 by branching on the variable which has the smallest domain---typically this will be a domain for a
-pattern vertex of high degree, or which has many high degree neighbours. Furthermore, once one such
+domain vertex of high degree, or which has many high degree neighbours. Furthermore, once one such
 guessed assignment has been made, adjacency propagation means many other domains will be
 substantially reduced in size, making subsequent branching choices simpler.  However, for
 homomorphism problems, if we cannot find any implied unary constraints then every domain will
@@ -392,6 +393,7 @@ Having determined which commonly-used subgraph isomorphism invariants do and do 
 forms of homomorphism, and having discovered a new clique-based invariant, we will now look at how
 these invariants may be used in practice. Our starting point is the Glasgow Subgraph Solver
 \cite{DBLP:conf/gg/McCreeshP020}, due to it being the current single strongest solver for the
+<<<<<<< HEAD
 subgraph isomorphism problem.
 
 ??
@@ -420,20 +422,128 @@ whichever lower bound of $|\omega_1|$ and $|\omega_2|$ is better (if both are va
 
 We then move on to the target vertices, using a similar caching routine. Rather than calculating a
 clique size for every single target vertex, we only calculate a value for target vertices which are
+=======
+subgraph isomorphism problem. Adapting the solver to handle locally injective and general
+homomorphism problems required the following straightforward changes.
+
+\paragraph{Injectivity constraints.} For subgraph isomorphism, injectivity is handled by a
+combination of binary constraints and a specialised bit-parallel all-different propagator
+\cite{DBLP:conf/cp/McCreeshP15}. This was disabled entirely for homomorphism problems, and for local
+injectivity only binary constraints were used.
+
+\paragraph{Path-based filtering.} For subgraph isomorphism, the Glasgow Subgraph Solver
+searches for a mapping which is simultaneously a subgraph isomorphisms between $(G, H)$ and each
+$(G^{n,2}, G^{n,2})$ for each $n$ from $1$ to $4$, and optionally also between $(G^3, H^3)$.
+
+\paragraph{Degree-based filtering.} This was disabled for homomorphisms and left enabled for locally
+injective homomorphisms, as per \cref{proposition:degreends}. For subgraph isomorphism, the Glasgow
+Subgraph Solver uses degree and neighbourhood degree sequences not just on the original graphs, but
+also on each $(G^{n,\ell}, H^{n,\ell})$ graph pair. This is \emph{not} possible for locally
+injective homomorphisms, due to the counter-example following \ref{corollary:lishapes}.
+
+\paragraph{Search order heuristics.} The solver's default search order heuristics are based upon
+three principles: that it is good to branch on variables with few remaining values in a domain, that
+it is good to branch on variables corresponding to high-degree vertices, and that it is good to try
+mapping to vertices of high degree
+\cite{DBLP:journals/jair/McCreeshPST18,DBLP:conf/cpaior/ArchibaldDHMP019}. These principles do not
+appear to be specific to subgraph isomorphism, and so we do not alter the search order heuristics.
+
+\paragraph{Loops.} For the homomorphism decision problem, we modified the solver so that if the
+codomain graph contains a loop, we immediately return a satisfying assignment mapping every vertex
+to the loop.
+
+\subsection{Clique Filtering}
+
+Implementing clique constraints required substantially more work. The Glasgow Subgraph Solver
+contains a maximum clique implementation, which is based upon a variation of
+\citet{DBLP:conf/walcom/TomitaSHTW10}'s MCS algorithm which
+\citet{DBLP:journals/algorithms/Prosser12} calls ``MCSa1'', with bit-parallelism and an altered
+branching scheme for faster optimality proofs \cite{DBLP:conf/cp/McCreeshP14}. The implementation
+also makes use of a shortcut due to \citet{DBLP:journals/jco/BatsynGMP14}, which allows certain
+cliques to be detected without branching---this turns out to be particularly useful in this setting,
+making many of the clique instances generated solvable using only a single greedy colouring step.
+Initially we used this solver to perform domain filtering as a preprocessing step. Preliminary
+experiments showed that a na{\"\i}ve approach, which simply calculates the maximum clique size for
+the neighbourhood of each domain vertex and each codomain vertex, would add as much as three minutes
+of preprocessing time to some problem instances which could otherwise be solved in a few seconds. We
+therefore use a more intelligent approach, which we now describe.
+
+Assuming a problem instance is not detected as obviously unsatisfiable, we calculate the maximum
+clique size for the neighbourhood of every domain vertex in turn. However, having found the maximum
+clique with $k$ vertices in the neighbourhood of a vertex $p$, we remember for every other vertex in
+the maximum clique that its neighbourhood maximum clique size is at least $k$. This can be used to
+accelerate subsequent clique solver calls, by starting the branch and bound algorithm with an
+initial incumbent size of $k$ rather than zero.
+
+We then move on to the codomain vertices, using a similar caching routine. Rather than calculating a
+clique size for every single codomain vertex, we only calculate a value for codomain vertices which are
 present in at least one variable's domain, after other unary constraints have been applied.
 (Depending upon the problem variant, implied constraints like degree and neighbourhood degree
-sequence can eliminate some target vertices from the domains of all pattern variables.)
+sequence can eliminate some codomain vertices from the domains of all domain variables.)
 Additionally, we do not require the maximum clique solver to run to completion and guarantee that it
 has found a maximum clique. Instead, we allow it to stop as soon as it has found a clique with as
-many vertices as the largest pattern clique. This is useful in practice because it may be very hard
-to decide whether a particular target vertex has neighbourhood clique size of, say, 15 or 16, but if
-the largest pattern vertex has a neighbourhood clique size of only 5 then this is irrelevant.\skcom{I would change this bit. I think it should be clear that on the second graph we \textit{dont} find a maximum clique, but what we want (for our cliques are preserved constraint) is cliques$\geq$ max size in the pattern vertex or in general of at least the sizes we find in the pattern vertex}
+many vertices as the largest domain clique. This is useful in practice because it may be very hard
+to decide whether a particular codomain vertex has neighbourhood clique size of, say, 15 or 16, but if
+the largest domain vertex has a neighbourhood clique size of only 5 then this is irrelevant.
 
-?? Why this works
+?? Why this works. Clique finding is much easier, colour bounds, etc. Small graphs. ?? See in
+section blah that it's really fast.
 
 \subsection{Proof Logging}
 
-?? How to log proofs
+Given the complexity of implementations of modern solvers, a critical question is how we can be sure
+that they are producing correct answers. The Glasgow Subgraph Solver's subgraph isomorphism and
+clique algorithms are both \emph{certifying} \cite{DBLP:journals/csr/McConnellMNS11}: that is, they
+can output a mathematical proof that they have reached a correct answer by sound reasoning, and this
+proof log can be verified by the VeriPB proof checking tool
+\cite{DBLP:conf/cp/GochtMMNPT20,DBLP:conf/ijcai/GochtMN20}. Certification involves two stages:
+firstly, the solver translates its inputs into a pseudo-Boolean model (this part is not verified),
+and secondly (for unsatisfiable instances), the solver provides a proof using cutting planes rules
+and reverse unit propagation steps that the pseudo-Boolean model is unsatisfiable.
+
+Implementing proof-logging for the changes not involving clique-finding was routing---although proof
+logging did catch an implementation bug where we were incorrectly applying degree-based filtering on
+the $G^{2,n}$ graphs for locally injective homomorphisms, in violation of the counter-example to
+\cref{corollary:lishapes}. For clique-based filtering, more work was required. We briefly
+outline the steps taken to implement proof logging for the fact that a vertex $p$ in the domain
+graph which is present in a $k$-vertex clique cannot be mapped to a vertex $t$ in the codomain graph
+which is not present in a $k$-vertex clique.
+
+?? Many technicalities.
+
+We have an $x_{p{,}t}$ saying that $p$ gets mapped to $t$. For a regular clique problem, we would have
+binary constraints $\overline{x}_i + \overline{x}_j \ge 1$ for each non-adjacent vertex $i$ and
+$j$. We wish to derive something similar for the non-adjacent vertices in the neighbourhood of $t$.
+However, our constraints are conditional upon $p$ being mapped to $t$, and so instead we start our
+proof step by deriving three sets of conditional\footnote{For the subgraph isomorphism case, these
+constraints need not be conditional.} pseudo-adjacency constraints:
+\begin{itemize}
+    \item $\overline{x}_{p{,}t} + \overline{x}_{q{,}u} + \overline{x}_{r{,}v} \ge 1$
+    \item $\overline{x}_{p{,}t} + \overline{x}_{q{,}u} + \overline{x}_{r{,}u} \ge 1$
+    \item $\overline{x}_{q{,}u} + \overline{x}_{q{,}v} \ge 1$
+\end{itemize}
+Each of these constraints follows by reverse unit propagation from the original model, and so
+requires no further justification in a proof log. We also need an objective constraint. From the
+definition of the homomorphism problem, we have existing adjacency constraints $\overline{x}_{p{,}t}
++ \sum_{u \in \neighbourhood(t)} x_{q{,}u} \ge 1$, and we may sum these constraints for each of the
+$k - 1$ vertices in the $k$-clique that includes $p$ to express that a suitable $k$-clique must
+exist in the codomain graph.
+
+We have now established something that is sufficiently similar to the maximum clique model used by
+?? that the . Colour classes (used for bounds) are in correspondence with colour classes in this
+adapted problem instance, which is similar to microstructure. Produce a proof that there is no
+target clique. The condition appears in the trail, and rather than deriving a contradiction, gets
+$\overline{x}_{p,t} \ge 1$.
+
+This situation is not entirely ideal. The proofs produced this way are inherently dependent upon a
+\emph{particular} choice of $p$ and $t$ vertices. When not proof logging, we need to solve a single
+maximum clique problem for each vertex in the domain, and a restricted clique problem for each
+vertex in the codomain. With proof logging, we must instead solve restricted clique problems for
+each $(p, t)$ assignment that is to be filtered, which is potentially a linear factor blowup. This
+feels morally excessive, since for any given $t$ (and for any clique in the codomain graph which is
+reused) the proofs produced are effectively the same up to a substitution of variable names. We
+would therefore be interested in seeing a proof system extension which would allow us to avoid this
+duplication.
 
 \section{Experiments}
 
@@ -454,12 +564,13 @@ the largest pattern vertex has a neighbourhood clique size of only 5 then this i
 
     \caption{On the top left, the cumulative number of instances solved over time for the three
     problem variants, with and without clique filtering, and with and without distance filtering for
-    the homomorphism problem. The remaining plots re-display this data, as follows. The three plots
-    on the bottom row zoom in on the cumulative number of instances solved, for the homomorphism
-    problem on the left, the locally injective homomorphism problem in the centre, and the subgraph
-    isomorphism problem on the right. The top centre plot shows the additional number of instances
-    solved at any given time when using the new forms of filtering for all problem variants, and the
-    top right plot shows the aggregate speedups from each form of filtering.}
+    the homomorphism problem; for comparison, results for subgraph isomoprhism using the PathLAD,
+    RI, and VF2 solvers are also shown. The remaining plots re-display this data, as follows. The
+    three plots on the bottom row zoom in on the cumulative number of instances solved, for the
+    homomorphism problem on the left, the locally injective homomorphism problem in the centre, and
+    the subgraph isomorphism problem on the right. The top centre plot shows the additional number
+    of instances solved at any given time when using the new forms of filtering for all problem
+    variants, and the top right plot shows the aggregate speedups from each form of filtering.}
 \end{figure*}
 \begin{figure*}[p]
     \,\hfill\begin{tabular}{c@{\hspace{4mm}}c@{\hspace{4mm}}c@{\hspace{4mm}}c@{\hspace{4mm}}}
@@ -482,13 +593,15 @@ the largest pattern vertex has a neighbourhood clique size of only 5 then this i
     kind of application.}
 \end{figure*}
 
-We now evaluate this approach empirically.
+We now evaluate this approach empirically on 
 
 ?? How good is it
 
 ?? Time on cliques
 
 ?? Whether cliques are hard
+
+?? Loops
 
 \section{Conclusion and Future Work}
 

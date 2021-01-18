@@ -19,6 +19,7 @@ set yrange [0:14621] noextend
 set logscale x
 set format x '$10^{%T}$'
 set ytics add ('$14621$' 14621)
+set xtics add ('~1h' 3600e3)
 
 cx(s,m)=stringcolumn(s)eq"NaN"?timeout:column(s)*m>=timeout?timeout:column(s)*m
 cy(s,m)=stringcolumn(s)eq"NaN"?1e-10:column(s)*m>=timeout?1e-10:1
@@ -39,13 +40,19 @@ set arrow 506 from graph 0, first upperygap length graph -.03 angle 15 nohead lw
 
 set style fill transparent solid 0.3 noborder
 
+set title 'Cumulative Instances Solved'
+
 plot \
-    "runtimes.data" u (cx("fatanode-results/gss-locallyinjective-20210111",1)):(cy("fatanode-results/gss-locallyinjective-20210111",1)) smooth cum w l ls 4 lw 1 ti "Local", \
-    "runtimes.data" u (cx("fatanode-results/gss-cliques-locallyinjective-20210111",1)):(cy("fatanode-results/gss-cliques-locallyinjective-20210111",1)) smooth cum w l ls 4 lw 2 ti "Local+C", \
-    "runtimes.data" u (cx("fatanode-results/gss-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-noninjective-nosupplementals-20210111",1)) smooth cum w l ls 7 lw 1 ti "Hom", \
-    "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)) smooth cum w l ls 7 lw 2 ti "Hom+C", \
-    "runtimes.data" u (cx("fatanode-results/gss-noninjective-20210111",1)):(cy("fatanode-results/gss-noninjective-20210111",1)) smooth cum w l ls 8 lw 2 ti "Hom+D", \
-    "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-20210111",1)) smooth cum w l ls 8 lw 3 ti "Hom+CD", \
-    "runtimes.data" u (cx("fatanode-results/gss-20210111",1)):(cy("fatanode-results/gss-20210111",1)) smooth cum w l ls 1 lw 1 ti "Injective", \
-    "runtimes.data" u (cx("fatanode-results/gss-cliques-20210111",1)):(cy("fatanode-results/gss-cliques-20210111",1)) smooth cum w l ls 1 lw 2 ti "Injective+C", \
+    "<head -n2 runtimes.data" u (3600e3):(14500) w p ps 0 lc rgb 'white' ti '\} See below' at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-locallyinjective-20210111",1)):(cy("fatanode-results/gss-locallyinjective-20210111",1)) smooth cum w l ls 4 lw 1 ti "LI", \
+    "runtimes.data" u (cx("fatanode-results/gss-cliques-locallyinjective-20210111",1)):(cy("fatanode-results/gss-cliques-locallyinjective-20210111",1)) smooth cum w l ls 4 lw 2 ti "LI+Clq", \
+    "runtimes.data" u (cx("fatanode-results/gss-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-noninjective-nosupplementals-20210111",1)) smooth cum w l ls 7 lw 1 ti "H", \
+    "runtimes.data" u (cx("fatanode-results/gss-noninjective-20210111",1)):(cy("fatanode-results/gss-noninjective-20210111",1)) smooth cum w l ls 8 lw 2 ti "H+Dst", \
+    "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-nosupplementals-20210111",1)) smooth cum w l ls 7 lw 2 ti "H+Clq", \
+    "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-20210111",1)) smooth cum w l ls 9 lw 2 ti "H+Both", \
+    "runtimes.data" u (cx("fatanode-results/gss-20210111",1)):(cy("fatanode-results/gss-20210111",1)) smooth cum w l ls 1 lw 1 ti "SI", \
+    "runtimes.data" u (cx("fatanode-results/gss-cliques-20210111",1)):(cy("fatanode-results/gss-cliques-20210111",1)) smooth cum w l ls 1 lw 2 ti "SI+Clq", \
+    "otherruntimes.data" u (cx("si-noninduced-vf2-20201208",1000)):(cy("si-noninduced-vf2-20201208",1000)) smooth cum w l ls 3 dt "." ti 'SI, VF2' at end, \
+    "otherruntimes.data" u (cx("si-noninduced-ri-20201208",1000)):(cy("si-noninduced-ri-20201208",1000)) smooth cum w l ls 5 dt "." ti '\raisebox{-0.5mm}{SI, RI}' at end, \
+    "otherruntimes.data" u (cx("si-noninduced-pathlad-20201208",1000)):(cy("si-noninduced-pathlad-20201208",1000)) smooth cum w l ls 6 dt "." ti '\raisebox{-1mm}{SI, PathLAD}' at end, \
 

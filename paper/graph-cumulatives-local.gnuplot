@@ -15,10 +15,10 @@ set xtics nomirror
 set ytics nomirror
 set key off
 set xrange [1e3:timeout]
-set yrange [14150:14500] noextend
+set yrange [14100:14450] noextend
 set logscale x
 set format x '$10^{%T}$'
-set xtics add ('1h' 3600e3)
+set xtics add ('~1h' 3600e3)
 
 cx(s,m)=stringcolumn(s)eq"NaN"?timeout:column(s)*m>=timeout?timeout:column(s)*m
 cy(s,m)=stringcolumn(s)eq"NaN"?1e-10:column(s)*m>=timeout?1e-10:1
@@ -28,6 +28,6 @@ set style fill transparent solid 0.3 noborder
 set title "Locally Injective"
 
 plot \
-    "runtimes.data" u (cx("fatanode-results/gss-locallyinjective-20210111",1)):(cy("fatanode-results/gss-locallyinjective-20210111",1)) smooth cum w l ls 4 lw 1 ti "None" at end, \
-    "runtimes.data" u (cx("fatanode-results/gss-cliques-locallyinjective-20210111",1)):(cy("fatanode-results/gss-cliques-locallyinjective-20210111",1)) smooth cum w l ls 4 lw 2 ti "Clq" at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-locallyinjective-20210111",1)):(cy("fatanode-results/gss-locallyinjective-20210111",1)) smooth cum w l ls 4 lw 1 ti "LI" at end, \
+    "runtimes.data" u (cx("fatanode-results/gss-cliques-locallyinjective-20210111",1)):(cy("fatanode-results/gss-cliques-locallyinjective-20210111",1)) smooth cum w l ls 4 lw 2 ti "LI+Clq" at end, \
 
