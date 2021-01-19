@@ -62,7 +62,7 @@ set title 'Additional Instances Solved'
 
 plot \
     0 w l ls -1, \
-    '<./differences gen-graph-cumulative-differences-gss-20210111.data gen-graph-cumulative-differences-gss-cliques-20210111.data' u 1:($3-$2) w l ls 1 lw 2 ti '\raisebox{1mm}{SI}' at end, \
+    '<./differences gen-graph-cumulative-differences-gss-20210111.data gen-graph-cumulative-differences-gss-cliques-20210111.data' u 1:($3-$2) w l ls 1 lw 2 ti '\raisebox{1mm}{SI+Clq}' at end, \
     '<./differences gen-graph-cumulative-differences-gss-locallyinjective-20210111.data gen-graph-cumulative-differences-gss-cliques-locallyinjective-20210111.data' u 1:($3-$2) w l ls 4 lw 2 ti '\raisebox{-1mm}{LI+Clq}' at end, \
     '<./differences gen-graph-cumulative-differences-gss-noninjective-nosupplementals-20210111.data gen-graph-cumulative-differences-gss-cliques-noninjective-nosupplementals-20210111.data' u 1:($3-$2) w l ls 7 lw 2 ti "H+Clq" at end, \
     '<./differences gen-graph-cumulative-differences-gss-noninjective-nosupplementals-20210111.data gen-graph-cumulative-differences-gss-noninjective-20210111.data' u 1:($3-$2) w l ls 8 lw 2 ti "H+Dst" at end, \
