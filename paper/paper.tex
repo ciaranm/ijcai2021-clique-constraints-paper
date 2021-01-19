@@ -102,7 +102,7 @@ comes from inference strategies based upon degrees and neighbourhood degree sequ
 \cite{DBLP:conf/cp/AudemardLMGP14,DBLP:conf/cp/McCreeshP15}, and cardinality reasoning
 \cite{DBLP:journals/ai/Solnon10}, which can be used to eliminate many infeasible candidate
 assignments without search. Like most other solvers, it can handle both the non-induced version of
-the problem, as well as the traditional induced variant, and users can select whichever variant
+the problem and the traditional induced variant, and users can select whichever variant
 better fits their application. It also supports directed edges, and can use an external constraint
 solver to handle other extensions to the basic notion of a graph, such as temporal networks and
 multi-graphs.
@@ -163,8 +163,8 @@ isomorphism}.
 of the definition, any homomorphism must map loops onto loops---and indeed, the Glasgow Subgraph
 Solver and this paper take this approach (although some other algorithm implementations do not). It
 therefore follows that for the homomorphism \emph{decision} problem where there are no injectivity
-constraints, any problem instance which has a loop in the codomain graph is trivially satisfiable,
-although the \emph{counting} problem remains \#\P-hard \cite{DBLP:journals/rsa/DyerG00}.
+constraints, any problem instance which has a loop in the codomain graph is trivially satisfiable
+(although the \emph{counting} problem remains \#\P-hard \cite{DBLP:journals/rsa/DyerG00}).
 
 \paragraph{Constraint programming.} A \emph{constraint satisfaction problem} is defined in terms of
 a set of \emph{variables}, each of which has a \emph{domain} of possible \emph{values}, together
@@ -336,12 +336,12 @@ propagation power.
 It is easy to verify that the first of these two properties is valid for \emph{any} homomorphism.
 The second property does not hold for homomorphisms in general: for example, a pair of vertices
 connected by three paths of length two may be mapped onto a pair of vertices connected by a single
-path of length two (see \cref{figure:counterexamples}, top right). While standard injectivity
-prevents any kind of merging, local injectivity prevents two vertices from being merged if they are
-both in the neighbourhood of the same vertex.  So the second property does not hold in full
-generality, because, for example, a path of length three may be mapped onto a triangle whilst
-respecting local injectivity (\cref{figure:counterexamples}, bottom left).  However, we observe that
-a weaker result holds:
+path of length two (see \cref{figure:counterexamples}, top right). The second property also does not
+hold in full generality for local injectivity, because, for example, a path of length three may be
+mapped onto a triangle (\cref{figure:counterexamples}, bottom left): while standard injectivity
+prevents any kind of merging, local injectivity only prevents two vertices from being merged if they
+are both in the neighbourhood of the same vertex. However, we observe that a weaker result does
+hold:
 
 \begin{proposition}[paths of length two are preserved by locally injective
     homomorphisms]\label{proposition:paths}For the problem of finding a locally injective graph
@@ -356,15 +356,15 @@ between $v$ and $w$. Observe that each $x_j$ is in the neighbourhood of $v$, and
     to different vertices. Thus each sequence $(i(v), i(x_j), i(w))$ gives a distinct simple path of
 length two between $i(v)$ and $i(w)$.\end{proof}
 
-Rather than using distance properties directly, \citet{DBLP:conf/cp/McCreeshP15} introduced
-the notion of \emph{supplemental} graphs, with the idea that a constraint programming algorithm can
-search for a mapping which is simultaneously a subgraph isomorphism between several different pairs
-of graphs. Let $G^d$ be the graph with the same set of vertices as $G$, but an edge between vertices
-$v$ and $w$ if the distance between $v$ and $w$ in $G$ is at most $d$.  Similarly, let $G^{n,\ell}$
-be the graph with the same set of vertices as $G$, but an edge between vertices $v$ and $w$ if there
-are at least $n$ simple paths of length exactly $\ell$ between $v$ and $w$ in $G$. Following on from
-\cref{proposition:distances,proposition:paths}, we generalise the result of
-\citeauthor{DBLP:conf/cp/McCreeshP15} as follows.
+Rather than using distance properties directly as \citet{DBLP:conf/cp/AudemardLMGP14} did,
+\citet{DBLP:conf/cp/McCreeshP15} introduced the notion of \emph{supplemental} graphs, with the idea
+that a constraint programming algorithm can search for a mapping which is simultaneously a subgraph
+isomorphism between several different pairs of graphs. Let $G^d$ be the graph with the same set of
+vertices as $G$, but an edge between vertices $v$ and $w$ if the distance between $v$ and $w$ in $G$
+is at most $d$.  Similarly, let $G^{n,\ell}$ be the graph with the same set of vertices as $G$, but
+an edge between vertices $v$ and $w$ if there are at least $n$ simple paths of length exactly $\ell$
+between $v$ and $w$ in $G$. Following on from \cref{proposition:distances,proposition:paths}, we
+generalise the result of \citeauthor{DBLP:conf/cp/McCreeshP15} as follows.
 
 \begin{corollary}Any homomorphism $i$ from $G$ to $H$ gives a homomorphism $i^d$ from $G^d$ to $H^d$
     defined by $i^d(v) = i(v)$, for all $d$. Furthermore, if $i$ is locally injective, then for all
@@ -377,16 +377,16 @@ illustrate a counter-example in \cref{figure:counterexamples} (bottom right). Th
 subgraph isomorphism, where $i^{n,\ell}$ is a subgraph isomorphism for all $\ell$
 \cite{DBLP:conf/cp/McCreeshP15}.
 
-\paragraph{Cliques and homomorphisms.} Finally, we come to the main result of this paper. Observe
-that until now, we have not seen any unary constraints which are valid for the general homomorphism
+\paragraph{Cliques and homomorphisms.} We now discuss the main new technique of this paper. Observe
+that so far, we have not seen any unary constraints which are valid for the general homomorphism
 problem. All existing constraint programming approaches for the subgraph isomorphism problem begin
 by branching on the variable which has the smallest domain---typically this will be a domain for a
-domain vertex of high degree, or which has many high degree neighbours. Furthermore, once one such
+vertex of high degree, or which has many high degree neighbours. Furthermore, once one such
 guessed assignment has been made, adjacency propagation means many other domains will be
 substantially reduced in size, making subsequent branching choices simpler.  However, for
 homomorphism problems, if we cannot find any implied unary constraints then every domain will
 initially be of the same size, which will make it much harder for a solver to know where to start.
-This motivates the following observation.
+This motivates the following.
 
 \begin{proposition}[Cliques are preserved]\label{proposition:clique}
     Let $i$ be a homomorphism from $G$ to $H$ where $H$ does
@@ -441,28 +441,29 @@ appear to be specific to subgraph isomorphism, and so we do not alter the search
 
 \paragraph{Loops.} For the homomorphism decision problem, we modified the solver so that if the
 codomain graph contains a loop, we immediately return a satisfying assignment mapping every vertex
-to the loop.
+to one of these loops.
 
 \subsection{Clique Filtering}
 
 Implementing clique constraints required substantially more work. The Glasgow Subgraph Solver
 contains a maximum clique implementation, which is based upon a variation of
 \citet{DBLP:conf/walcom/TomitaSHTW10}'s MCS algorithm which
-\citet{DBLP:journals/algorithms/Prosser12} calls ``MCSa1'', with bit-parallelism and an altered
+\citet{DBLP:journals/algorithms/Prosser12} calls ``MCSa1'', with bit-parallelism
+\cite{DBLP:journals/ol/SegundoMRH13} and an altered
 branching scheme for faster optimality proofs \cite{DBLP:conf/cp/McCreeshP14}. The implementation
 also makes use of a shortcut due to \citet{DBLP:journals/jco/BatsynGMP14}, which allows certain
 cliques to be detected without branching---this turns out to be particularly useful in this setting,
-making many of the clique instances generated solvable using only a single greedy colouring step.
+making many of the clique instances generated solvable without branching.
 Initially we used this solver to perform domain filtering as a preprocessing step. Preliminary
-experiments showed that a na{\"\i}ve approach, which simply calculates the maximum clique size for
+experiments showed that a na{\"\i}ve approach, which calculates the maximum clique size for
 the neighbourhood of each domain vertex and each codomain vertex, would add as much as three minutes
 of preprocessing time to some problem instances which could otherwise be solved in a few seconds. We
-therefore use a more intelligent approach, which we now describe.
+therefore invested more engineering effort, as follows.
 
 Assuming a problem instance is not detected as obviously unsatisfiable, we calculate the maximum
-clique size for the neighbourhood of every domain vertex in turn. However, having found the maximum
+clique size for the neighbourhood of every domain vertex in turn. However, having found a maximum
 clique with $k$ vertices in the neighbourhood of a vertex $p$, we remember for every other vertex in
-the maximum clique that its neighbourhood maximum clique size is at least $k$. This can be used to
+this maximum clique that its neighbourhood maximum clique size is at least $k$. This can be used to
 accelerate subsequent clique solver calls, by starting the branch and bound algorithm with an
 initial incumbent size of $k$ rather than zero.
 
@@ -477,7 +478,7 @@ the largest domain vertex has a neighbourhood clique size of only 5 then this is
 
 \subsection{Proof Logging}
 
-Given the complexity of implementations of modern solvers, a critical question is how we can be sure
+Given the complexity of modern solvers, a critical question is how we can be sure
 that they are producing correct answers. The Glasgow Subgraph Solver's subgraph isomorphism and
 clique algorithms are both \emph{certifying} \cite{DBLP:journals/csr/McConnellMNS11}: that is, they
 can output a mathematical proof that they have reached a correct answer by sound reasoning, and this
@@ -564,15 +565,13 @@ include these to avoid using different y-axes on different plots.
 In the top left plot of \cref{figure:plots} we show the cumulative number of instances solved over
 time, for each of the three problem variants, using the Glasgow Subgraph Solver with and without our
 clique-filtering added. For the homomorphism problem, we also compare with distance filtering
-enabled or disabled. For subgraph isomorphism, we also compare against the PathLAD
+enabled or disabled. For subgraph isomorphism, we further compare against the PathLAD
 \cite{DBLP:conf/lion/KotthoffMS16}, VF2 \cite{DBLP:journals/pami/CordellaFSV04} and RI
-\cite{DBLP:journals/bmcbi/BonniciGPSF13} solvers. Because every Glasgow Subgraph Solver result is so
-much stronger than the other three solvers, it is hard to get any further information from this
-plot. We therefore re-plot zoomed in results on the second row of \cref{figure:plots}, focusing each
-problem variant in turn. The results show that for the homomorphism problem, using either clique or
+\cite{DBLP:journals/bmcbi/BonniciGPSF13} solvers. To make the details of this plot readable, the
+second row of \cref{figure:plots} zooms in on the results for each
+problem variant in turn. We see that for the homomorphism problem, using either clique or
 distance filtering gives a clear improvement to performance, and using both together is better
-still. For locally injective homomorphisms and subgraph isomorphism, clique filtering also gives an
-improvement.
+still. For both injective problems, clique filtering gives a more moderate improvement.
 
 To quantify these gains, the top centre plot of \cref{figure:plots} shows the
 additional number of instances solved at any given time (that is, the vertical distance between
@@ -583,33 +582,34 @@ using just distance filtering, just clique filtering, or both. Alternatively, we
 horizontal distance between plots for a given choice of timeout $t$ as follows. Let $t'$
 be the last time no greater than $t$ where the slower algorithm solved an instance, and let $u$ be
 the lowest amount of time needed for the faster algorithm to solve the same number of instances.
-Then the aggregate speedup, which we plot in the top right of \cref{figure:plots}, is the ratio of
-$t'$ to $u$ or $u$ to $t'$ as appropriate. At the timeout, we see aggregate speedups of 2.2 for
-locally injective homomorphisms, 3.2 for subgraph isomorphism, and 47.5, 131.7, and 803.5 for
+The \emph{aggregate speedup}, which we plot in the top right of \cref{figure:plots}, is the ratio of
+$t'$ to $u$ or $u$ to $t'$ as appropriate. At the one hour timeout, we see aggregate speedups of 2.2
+for locally injective homomorphisms, 3.2 for subgraph isomorphism, and 47.5, 131.7, and 803.5 for
 homomorphisms.
 
-The crossover point, where clique filtering begins to pay off, is at around the 100ms mark for all
-homomorphism variants, and at around one second for subgraph isomorphism. This does not mean that
-this much time was spent in clique-finding, but rather that this is how long it takes for an
-algorithm with increased filtering to catch up from a slower start. In fact, for domain graphs, no
-maximum clique call took even one millisecond to complete (and none required more than two hundred
-recursive calls from the clique solver), and more time was spent setting up the necessary data
-structures to represent the graphs than on the solving itself. For codomain graphs, 20,838,008 of
-the clique problems we solved took under a millisecond, and the remaining 279 calls took between one
-and four milliseconds, with no instance requiring more than a thousand recursive calls to solve.
-Although it may seem counter-intuitive to try to speed up the solving of a hard problem by first
-solving many other hard problems, these values demonstrate that clique-solving on these smaller
-graphs is \emph{much} easier in practice than solving the larger problem, and so is worthwhile.
+The crossover point, where clique filtering begins to pay off, is at around the 100ms mark without
+injectivity, and at around one second for the injective problems. This does not show how much time
+was spent in clique-finding, but rather how long it takes for an algorithm with increased
+filtering to catch up from a slower start. In fact, for domain graphs, no maximum clique call took
+even one millisecond to complete (and none required more than two hundred recursive calls from the
+clique solver), and more time was spent setting up the data structures to represent the
+neighbourhood graphs than on the actual solving. For codomain graphs, 20,838,008 of the clique
+problems we solved took under a millisecond, and the remaining 279 calls took between one and four
+milliseconds, with no instance requiring more than a thousand recursive calls.  Although it may seem
+counter-intuitive to try to speed up the solving of a hard problem by first solving many other hard
+problems, these values demonstrate that clique-solving on these smaller graphs is \emph{much} easier
+in practice than solving the larger problem, and so is worthwhile.
 
-Finally, \cref{figure:scatters}, plots instance-by-instance comparisons of the runtimes. The
+Finally, \cref{figure:scatters} plots instance-by-instance comparisons of the runtimes. The
 point styles in these plots show different families of benchmark instance, and demonstrate
-that the benefits of filtering are not restricted to one application.
+that the benefits of filtering are not restricted to one application. They also show that clique
+filtering very rarely makes performance a lot worse, but often makes it a lot better.
 
 \section{Conclusion}
 
-These results show that constraint programming approaches are viable for a wider range of subgraph
-mapping finding problems than had previously been considered, which will increase the versatility of
-subgraph solvers for application users going forwards. We also saw that using clique-finding as a
+Our results have shown that constraint programming approaches are viable for a wider range of subgraph
+mapping finding problems than had previously been considered, and will increase the versatility of
+subgraph solvers for application users going forwards. We saw that using clique-finding as a
 filtering step could give moderate to very large speedups for different problem variants---although
 only through careful engineering choices, to mitigate the potential cost of solving \NP-hard
 problems. We would be interested to see if filtering based upon other hard problems could give
