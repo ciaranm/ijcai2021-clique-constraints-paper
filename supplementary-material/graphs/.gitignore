@@ -1,0 +1,15 @@
+gen-*
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.pdf
+*.bbl
+*.blg
+*.vtc
+!cc-by.pdf
+!lipics-logo-bw.pdf
+!orcid.pdf
+differences
+aggregates
