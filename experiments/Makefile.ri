@@ -1,0 +1,27 @@
+SHELL := /bin/bash
+FILTER := -1
+MODULUS := 1
+CATTER := cat
+INSTANCES_FILE := instances.txt
+INSTANCES := $(shell cat $(INSTANCES_FILE) | $(CATTER) | cut -d' ' -f1 | if [[ $(FILTER) == -1 ]] ; then cat ; else awk "(NR % $(MODULUS)) == ($(FILTER) % $(MODULUS))" ; fi)
+TIMEOUT := 3600
+ALGORITHMS := ri
+RESULTS := results
+
+all : $(foreach i, $(INSTANCES), $(foreach a, $(ALGORITHMS), $(RESULTS)/$(a)/$i.out ))
+
+dir-% :
+	mkdir -p $(RESULTS) $(RESULTS)/$*
+
+$(RESULTS)/ri/%.out : | dir-ri
+	timeout $(TIMEOUT)s ../ri/solve_ri3 mono loopgfu \
+	    <(../ri/lad2gfu < $(shell grep "^`basename $*` " < instances.txt | cut -d' ' -f3 ) ) \
+	    <(../ri/lad2gfu < $(shell grep "^`basename $*` " < instances.txt | cut -d' ' -f2 ) ) \
+	    > >(tee $@ ) ; x=$$? ; [[ $$x == 0 ]] || { [[ $$x == 124 ]] && echo timeout >> $@ ; } || { echo got exit status $$x ; false ; }
+
+$(RESULTS)/riinduced/%.out : | dir-riinduced
+	timeout $(TIMEOUT)s ../ri/solve_ri3 ind loopgfu \
+	    <(../ri/lad2gfu < $(shell grep "^`basename $*` " < instances.txt | cut -d' ' -f3 ) ) \
+	    <(../ri/lad2gfu < $(shell grep "^`basename $*` " < instances.txt | cut -d' ' -f2 ) ) \
+	    > >(tee $@ ) ; x=$$? ; [[ $$x == 0 ]] || { [[ $$x == 124 ]] && echo timeout >> $@ ; } || { echo got exit status $$x ; false ; }
+

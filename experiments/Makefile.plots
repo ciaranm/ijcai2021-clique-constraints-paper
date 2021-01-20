@@ -1,0 +1,23 @@
+SHELL := /bin/bash
+FILTER := -1
+MODULUS := 1
+INSTANCES_FILE := instances.txt
+CATTER := cat
+INSTANCES := $(shell cat $(INSTANCES_FILE) | $(CATTER) | cut -d' ' -f1 | if [[ $(FILTER) == -1 ]] ; then cat ; else awk "(NR % $(MODULUS)) == ($(FILTER) % $(MODULUS))" ; fi)
+GLASGOW_ALGORITHMS :=
+LAD_ALGORITHMS := pathlad
+VF2_ALGORITHMS := vf2
+RI_ALGORITHMS := ri
+ALL_ALGORITHMS := $(GLASGOW_ALGORITHMS) $(LAD_ALGORITHMS) $(VF2_ALGORITHMS) $(RI_ALGORITHMS)
+RESULTS := results
+
+all : $(RESULTS)/otherruntimes.data
+
+$(RESULTS)/otherruntimes.data :
+	{ \
+	    echo instance family $(ALL_ALGORITHMS) ; \
+	    $(CATTER) $(INSTANCES_FILE) | if [[ $(FILTER) == -1 ]] ; then cat ; else awk "(NR % $(MODULUS)) == ($(FILTER) % $(MODULUS))" ; fi | while read i p t f ; do \
+	        echo $$i $$f $$(for a in $(ALL_ALGORITHMS) ; do cat $(RESULTS)/stats/$$i.runtime.$$a || echo XXX ; done ) ; \
+	    done ; \
+	} | tee $@
+

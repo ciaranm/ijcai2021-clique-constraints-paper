@@ -1,0 +1,81 @@
+SHELL := /bin/bash
+FILTER := -1
+MODULUS := 1
+INSTANCES_FILE := instances.txt
+CATTER := cat
+INSTANCES := $(shell cat $(INSTANCES_FILE) | $(CATTER) | cut -d' ' -f1 | if [[ $(FILTER) == -1 ]] ; then cat ; else awk "(NR % $(MODULUS)) == ($(FILTER) % $(MODULUS))" ; fi)
+GLASGOW_ALGORITHMS :=
+LAD_ALGORITHMS := pathlad
+VF2_ALGORITHMS := vf2
+RI_ALGORITHMS := ri
+ALL_ALGORITHMS := $(GLASGOW_ALGORITHMS) $(LAD_ALGORITHMS) $(VF2_ALGORITHMS) $(RI_ALGORITHMS)
+RESULTS := results
+RUNTIMES = $(foreach i, $(INSTANCES), $(foreach a, $(ALL_ALGORITHMS), $(RESULTS)/stats/$i.runtime.$a ))
+
+all : $(RUNTIMES)
+
+dir-% :
+	mkdir -p $(RESULTS) $(RESULTS)/$*
+
+define GLASGOW_ALGORITHM_template
+$(RESULTS)/stats/%.runtime.$(1) : | dir-stats
+	if grep -q status $(RESULTS)/$(1)/$$*.out ; then \
+	    if grep -q '^status = aborted' $(RESULTS)/$(1)/$$*.out ; then echo 'NaN' > $$@ ; \
+	    else grep '^runtime =' $(RESULTS)/$(1)/$$*.out | cut -d= -f2 | tr -d ' ' > $$@ ; \
+	    fi ; \
+	fi
+	test -s $$@
+
+$(RESULTS)/stats/%.searchtime.$(1) : | dir-stats
+	if grep -q status $(RESULTS)/$(1)/$$*.out ; then \
+	    if grep -q '^status = aborted' $(RESULTS)/$(1)/$$*.out ; then echo 'NaN' > $$@ ; \
+	    elif grep -q '^status = skipped' $(RESULTS)/$(1)/$$*.out ; then echo 0 > $$@ ; \
+	    elif grep -q '^nodes = 0$$$$' $(RESULTS)/$(1)/$$*.out ; then echo 0 > $$@ ; \
+	    elif grep -q '^h0.t0.nodes' $(RESULTS)/$(1)/$$*.out ; then echo 0 > $$@ ; \
+	    else grep '^search_time =' $(RESULTS)/$(1)/$$*.out | cut -d= -f2 | tr -d ' ' > $$@ ; \
+	    fi ; \
+	fi
+	test -s $$@
+
+$(RESULTS)/stats/%.searchsize.$(1) : | dir-stats
+	if grep -q status $(RESULTS)/$(1)/$$*.out ; then \
+	    if grep -q '^status = aborted' $(RESULTS)/$(1)/$$*.out ; then echo 'NaN' > $$@ ; \
+	    elif grep -q '^status = skipped' $(RESULTS)/$(1)/$$*.out ; then echo 0 > $$@ ; \
+	    else grep '^nodes =' $(RESULTS)/$(1)/$$*.out | cut -d= -f2 | tr -d ' ' > $$@ ; \
+	    fi ; \
+	fi
+	test -s $$@
+endef
+
+$(foreach a,$(GLASGOW_ALGORITHMS),$(eval $(call GLASGOW_ALGORITHM_template,$(a))))
+
+define VF2_ALGORITHM_template
+$(RESULTS)/stats/%.runtime.$(1) : | dir-stats
+	if grep -q aborted $(RESULTS)/$(1)/$$*.out ; then echo 'NaN' > $$@ ; \
+	else sed -n -e '3p' $(RESULTS)/$(1)/$$*.out | cut -d' ' -f1 > $$@ ; \
+	fi
+	test -s $$@
+endef
+
+$(foreach a,$(VF2_ALGORITHMS),$(eval $(call VF2_ALGORITHM_template,$(a))))
+
+define RI_ALGORITHM_template
+$(RESULTS)/stats/%.runtime.$(1) : | dir-stats
+	if grep -q 'timeout' $(RESULTS)/$(1)/$$*.out ; then echo 'NaN' > $$@ ; \
+	else sed -n -e '/^matching time: /s/^.*: //p' $(RESULTS)/$(1)/$$*.out > $$@ ; \
+	fi
+	test -s $$@
+endef
+
+$(foreach a,$(RI_ALGORITHMS),$(eval $(call RI_ALGORITHM_template,$(a))))
+
+define LAD_ALGORITHM_template
+$(RESULTS)/stats/%.runtime.$(1) : | dir-stats
+	if grep -q 'exceeded' $(RESULTS)/$(1)/$$*.out ; then echo 'NaN' > $$@ ; \
+	else sed -n -e '/^Run completed:/s/^.* 0*\([0-9]*\)\.\([0-9][0-9][0-9]\)[0-9]* seconds$$$$/\1\2/p' $(RESULTS)/$(1)/$$*.out > $$@ ; \
+	fi
+	test -s $$@
+endef
+
+$(foreach a,$(LAD_ALGORITHMS),$(eval $(call LAD_ALGORITHM_template,$(a))))
+

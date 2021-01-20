@@ -1,0 +1,45 @@
+SHELL := /bin/bash
+FILTER := -1
+MODULUS := 1
+CATTER := cat
+INSTANCES_FILE := instances.txt
+INSTANCES := $(shell cat $(INSTANCES_FILE) | $(CATTER) | cut -d' ' -f1 | if [[ $(FILTER) == -1 ]] ; then cat ; else awk "(NR % $(MODULUS)) == ($(FILTER) % $(MODULUS))" ; fi)
+TIMEOUT := 3600
+TODAY := 20210111
+ALGORITHMS := \
+    gss-$(TODAY) \
+    gss-locallyinjective-$(TODAY) \
+    gss-noninjective-$(TODAY) \
+    gss-noninjective-nosupplementals-$(TODAY) \
+    gss-cliques-$(TODAY) \
+    gss-cliques-locallyinjective-$(TODAY) \
+    gss-cliques-noninjective-$(TODAY) \
+    gss-cliques-noninjective-nosupplementals-$(TODAY) \
+    gss-cliques-cliquesup-$(TODAY) \
+    gss-cliques-cliquesup-locallyinjective-$(TODAY) \
+    gss-cliques-cliquesup-noninjective-$(TODAY)
+
+STACK_SPACE := 10485760
+RESULTS := results
+
+all : $(foreach i, $(INSTANCES), $(foreach a, $(ALGORITHMS), $(RESULTS)/$(a)/$i.out ))
+
+dir-% :
+	mkdir -p $(RESULTS) $(RESULTS)/$*
+
+define ALGORITHM_template
+$(RESULTS)/$(1)/%.out : | dir-$(1)
+	ulimit -s $$(STACK_SPACE) ; ../glasgow-subgraph-solver/glasgow_subgraph_solver \
+	    --format lad \
+	    --timeout $$(TIMEOUT) \
+	    $$$$(if echo $(1) | grep -q locallyinjective ; then echo --locally-injective ; fi ) \
+	    $$$$(if echo $(1) | grep -q noninjective ; then echo --noninjective ; fi ) \
+	    $$$$(if echo $(1) | grep -q cliques ; then echo --cliques ; fi ) \
+	    $$$$(if echo $(1) | grep -q cliquesup ; then echo --cliques-on-supplementals ; fi ) \
+	    $$$$(if echo $(1) | grep -q nosupplementals ; then echo --no-supplementals ; fi ) \
+	    $$$$(if echo $(1) | grep -q count ; then echo --count-solutions ; fi ) \
+	    $$(shell grep "^`basename $$*` " < instances.txt | cut -d' ' -f2-3 ) > >(tee $$@ )
+endef
+
+$(foreach a,$(ALGORITHMS),$(eval $(call ALGORITHM_template,$(a))))
+

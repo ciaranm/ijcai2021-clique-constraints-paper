@@ -1,0 +1,19 @@
+SHELL := /bin/bash
+FILTER := -1
+MODULUS := 1
+INSTANCES := $(shell cut -d' ' -f1 instances.txt | if [[ $(FILTER) == -1 ]] ; then cat ; else awk "(NR % $(MODULUS)) == ($(FILTER) % $(MODULUS))" ; fi)
+TIMEOUT := 3600
+ALGORITHMS := vf2
+RESULTS := results
+
+all : $(foreach i, $(INSTANCES), $(foreach a, $(ALGORITHMS), $(RESULTS)/$(a)/$i.out ))
+
+dir-% :
+	mkdir -p $(RESULTS) $(RESULTS)/$*
+
+$(RESULTS)/vf2/%.out : | dir-vf2
+	../vflib/solve_vf $(shell grep "^`basename $*` " < instances.txt | cut -d' ' -f2-3 ) $(TIMEOUT) > >(tee $@ )
+
+$(RESULTS)/vf2induced/%.out : | dir-vf2induced
+	../vflib/solve_vf_induced $(shell grep "^`basename $*` " < instances.txt | cut -d' ' -f2-3 ) $(TIMEOUT) > >(tee $@ )
+
