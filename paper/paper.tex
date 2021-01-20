@@ -48,14 +48,14 @@
 \maketitle
 
 \begin{abstract}
-    Graph homomorphism problems involve finding adjacency-preserving mappings between two graphs.
-    Many of these problems are theoretically hard, but can be solved quite efficiently in practice
-    through constraint programming techniques.  This paper adapts techniques from the
-    state-of-the-art in subgraph isomorphism solving to broader graph homomorphism problems, and
-    introduces a new form of filtering based upon clique-finding. We evaluate these techniques
-    empirically, and show they are effective in practice for the locally injective graph
-    homomorphism and subgraph isomorphism problems, as well as giving the first practical constraint
-    programming approach to finding general graph homomorphisms.
+    Graph homomorphism problems involve finding adjacency-preserving mappings between two given
+    graphs.  Although theoretically hard, these problems can often be solved in practice
+    using constraint programming algorithms. We show how techniques from the state-of-the-art in
+    subgraph isomorphism solving can be applied to broader graph homomorphism problems, and
+    introduce a new form of filtering based upon clique-finding. We demonstrate empirically that
+    this filtering is effective for the locally injective graph homomorphism and subgraph
+    isomorphism problems, and gives the first practical constraint programming approach to
+    finding general graph homomorphisms.
 \end{abstract}
 
 \section{Introduction}
@@ -68,7 +68,8 @@ and chemistry, the same name is often implicitly used to mean the \emph{non-indu
 problem (which does not require that non-adjacency be preserved) since this more accurately models
 the real-world problem being solved \cite{Willett1999,EhrlichR11}. Despite being theoretically hard
 problems, these applications, along with
-others in areas including compilers \cite{DBLP:conf/cp/BlindellLCS15}
+others in areas including compilers \cite{DBLP:conf/cp/BlindellLCS15},
+graph databases \cite{DBLP:journals/jair/McCreeshPST18}
 and pattern recognition \cite{DBLP:journals/ijprai/FoggiaPV14},
 have given rise to a large amount of research into designing practical algorithms for solving these
 problems.  Most approaches are based either upon very fast but simple backtracking algorithms
@@ -118,9 +119,8 @@ approaches have focused instead upon worst-case computational bounds
 (e.g.\
 \citet{DBLP:journals/mst/FominHK07,DBLP:journals/csr/FialaK08,DBLP:journals/ipl/Rzazewski14,DBLP:journals/tcs/ChaplickFHPT15}),
 whose practical utility has yet to be demonstrated. The empirical effectiveness of our results is
-especially important because many current applications use subgraph isomorphism solvers only because
-they perform well using off the shelf solvers, rather than because they exactly match ideal domain
-requirements.
+especially important because many applications use subgraph isomorphism solvers only because
+they perform well off the shelf, rather than because they exactly match domain requirements.
 
 \section{Background and Theory}
 
@@ -380,8 +380,7 @@ This motivates the following.
 
 \begin{proof}
     Let $j$ and $k$ be two distinct vertices of the clique in $G$. By definition of a homomorphism,
-    $i(j)$ and $i(k)$ must be adjacent. And, because $H$ does not contain loops, $i(j)$ cannot equal
-    $i(k)$.
+    $i(j)$ and $i(k)$ must be adjacent. And, because $H$ has no loops, $i(j) \ne i(k)$.
 \end{proof}
 
 \begin{corollary}\Cref{proposition:clique} holds for locally injective graph homomorphisms and for
@@ -456,9 +455,9 @@ clique size for every single codomain vertex, we only calculate a value for codo
 present in at least one variable's domain, after other unary constraints have been applied.
 Additionally, we do not require the maximum clique solver to run to completion and guarantee that it
 has found a maximum clique. Instead, we allow it to stop as soon as it has found a clique with as
-many vertices as the largest domain clique. This is useful in practice because it may be very hard
-to decide whether a particular codomain vertex has neighbourhood clique size of, say, 15 or 16, but if
-the largest domain vertex has a neighbourhood clique size of only 5 then this is irrelevant.
+many vertices as the largest domain clique. This is useful because it may be very hard to decide
+whether a particular codomain vertex has neighbourhood clique size of, say, 15 or 16, but if the
+largest domain vertex has a neighbourhood clique size of only 5 then this is irrelevant.
 
 \subsection{Proof Logging}
 
@@ -562,14 +561,17 @@ additional number of instances solved at any given time (that is, the vertical d
 two cumulative plots) when enabling additional filtering. We see that for subgraph isomorphism, at
 the one hour timeout we solve 22 additional instances using clique filtering; for locally injective
 homomorphisms, 21 additional instances; and for homomorphisms, 114, 146 or 193 additional instances
-using just distance filtering, just clique filtering, or both. Alternatively, we can measure the
-horizontal distance between plots for a given choice of timeout $t$ as follows. Let $t'$
-be the last time no greater than $t$ where the slower algorithm solved an instance, and let $u$ be
-the lowest amount of time needed for the faster algorithm to solve the same number of instances.
-The \emph{aggregate speedup}, which we plot in the top right of \cref{figure:plots}, is the ratio of
-$t'$ to $u$ or $u$ to $t'$ as appropriate. At the one hour timeout, we see aggregate speedups of 2.2
-for locally injective homomorphisms, 3.2 for subgraph isomorphism, and 47.5, 131.7, and 803.5 for
-homomorphisms.
+using just distance filtering, just clique filtering, or both. Or, at the best choices of timeouts,
+we solve 53 additional subgraph isomorphism instances; 64 additional locally injective instances;
+and 243, 383, and 424 additional homomorphism instances.
+
+Alternatively, we can measure the horizontal distance between plots for a given choice of timeout
+$t$ as follows. Let $t'$ be the last time no greater than $t$ where the slower algorithm solved an
+instance, and let $u$ be the lowest amount of time needed for the faster algorithm to solve the same
+number of instances.  The \emph{aggregate speedup}, which we plot in the top right of
+\cref{figure:plots}, is the ratio of $t'$ to $u$ or $u$ to $t'$ as appropriate. At the one hour
+timeout, we see aggregate speedups of 2.2 for locally injective homomorphisms, 3.2 for subgraph
+isomorphism, and 47.5, 131.7, and 803.5 for homomorphisms.
 
 The crossover point, where clique filtering begins to pay off, is at around the 100ms mark without
 injectivity, and at around one second for the injective problems. This does not show how much time
