@@ -66,6 +66,7 @@ unset format y
 set logscale y
 set xtics add ('~1h' 3600e3)
 set format y '$%.0f\times$'
+set ytics add ('$0.1\times$' 0.1)
 set ytics offset character 0.5
 
 set title 'Aggregate Speedup'

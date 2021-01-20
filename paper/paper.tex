@@ -165,14 +165,14 @@ homomorphisms can be made much more effective by exploiting certain invariants. 
 straightforward to verify the following.
 
 \begin{proposition}[neighbourhood degree sequences are preserved]\label{proposition:degreends}
-    Suppose  $i$ is a locally injective homomorphism from a $G$ to  $H$. Let
+    Suppose  $i$ is a locally injective homomorphism from $G$ to  $H$. Let
     $v$ be any vertex. Then $i$ cannot map $v$ to a vertex of lower degree, $\degree_G(v) \le \degree_H(i(v))$.
     Furthermore, $v$ cannot be mapped to any vertex whose neighbourhood degree sequence is
             not pointwise greater than or equal to its own.
 \end{proposition}
 Since subgraph isomorphisms are in particular locally injective, these invariants also hold for
 subgraph isomorphisms \cite{DBLP:journals/constraints/ZampelliDS10}; indeed, every recent constraint
-programming approach for subgraph isomorphism finding make use of degrees and neighbourhood degree
+programming approach for subgraph isomorphism finding makes use of degrees and neighbourhood degree
 sequences. The simplest way for a constraint programming algorithm to use these results is as unary
 constraints, which are propagated when domains are initialised, before search begins. For each
 domain representing a domain vertex, any value representing a codomain vertex whose degree or
