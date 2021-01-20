@@ -52,7 +52,7 @@ plot \
     "runtimes.data" u (cx("fatanode-results/gss-cliques-noninjective-20210111",1)):(cy("fatanode-results/gss-cliques-noninjective-20210111",1)) smooth cum w l ls 9 lw 2 ti "H+Both", \
     "runtimes.data" u (cx("fatanode-results/gss-20210111",1)):(cy("fatanode-results/gss-20210111",1)) smooth cum w l ls 1 lw 1 ti "SI", \
     "runtimes.data" u (cx("fatanode-results/gss-cliques-20210111",1)):(cy("fatanode-results/gss-cliques-20210111",1)) smooth cum w l ls 1 lw 2 ti "SI+Clq", \
-    "otherruntimes.data" u (cx("si-noninduced-vf2-20201208",1000)):(cy("si-noninduced-vf2-20201208",1000)) smooth cum w l ls 3 dt "." ti 'SI, VF2' at end, \
-    "otherruntimes.data" u (cx("si-noninduced-ri-20201208",1000)):(cy("si-noninduced-ri-20201208",1000)) smooth cum w l ls 5 dt "." ti '\raisebox{-0.5mm}{SI, RI}' at end, \
-    "otherruntimes.data" u (cx("si-noninduced-pathlad-20201208",1000)):(cy("si-noninduced-pathlad-20201208",1000)) smooth cum w l ls 6 dt "." ti '\raisebox{-1mm}{SI, PathLAD}' at end, \
+    "otherruntimes.data" u (cx("vf2",1000)):(cy("vf2",1000)) smooth cum w l ls 3 dt "." ti 'SI, VF2' at end, \
+    "otherruntimes.data" u (cx("ri",1000)):(cy("ri",1000)) smooth cum w l ls 5 dt "." ti '\raisebox{-0.5mm}{SI, RI}' at end, \
+    "otherruntimes.data" u (cx("pathlad",1000)):(cy("pathlad",1000)) smooth cum w l ls 6 dt "." ti '\raisebox{-1mm}{SI, PathLAD}' at end, \
 
