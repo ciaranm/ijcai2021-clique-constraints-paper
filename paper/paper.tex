@@ -23,6 +23,11 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes}
 
+% \usepackage[textsize=tiny,textwidth=2cm,shadow]{todonotes}
+% \newcommand{\skcom}[1]{\todo[color=orange!50!white]{{S}: #1}}
+% \newcommand{\rcom}[1]{\todo[color=gray!50!white]{{R}: #1}}%reviewers said
+% \usepackage{showframe}
+
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
 
@@ -37,6 +42,17 @@
 \title{Solving Graph Homomorphism and Subgraph Isomorphism Problems Faster Through Clique Neighbourhood Constraints}
 
 \author{Paper 4726}
+
+% \author{
+% Ciaran McCreesh$^1$
+% \and
+% Sonja Kraiczy$^2$
+% \affiliations
+% $^1$University of Glasgow\\
+% $^2$University of Oxford\\
+% \emails
+% ciaran.mccreesh@glasgow.ac.uk
+% }
 
 \newcommand{\neighbourhood}{\operatorname{N}}
 \newcommand{\vertexset}{\operatorname{V}}
@@ -601,6 +617,11 @@ only through careful engineering choices, to mitigate the potential cost of solv
 problems. We would be interested to see if filtering based upon other hard problems could give
 similar benefits---for example, homomorphisms also interact in potentially helpful ways with various
 colouring properties.
+
+% \section*{Acknowledgements}
+% 
+% This work was supported by the Engineering and Physical Sciences Research Council [grant number
+% EP/P026842/1].
 
 \bibliographystyle{named}
 \bibliography{paper}
