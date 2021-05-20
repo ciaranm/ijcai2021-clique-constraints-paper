@@ -23,11 +23,6 @@
 \usepackage{tikz}
 \usetikzlibrary{shapes}
 
-% \usepackage[textsize=tiny,textwidth=2cm,shadow]{todonotes}
-% \newcommand{\skcom}[1]{\todo[color=orange!50!white]{{S}: #1}}
-% \newcommand{\rcom}[1]{\todo[color=gray!50!white]{{R}: #1}}%reviewers said
-% \usepackage{showframe}
-
 \newtheorem{proposition}{Proposition}
 \newtheorem{corollary}{Corollary}
 
@@ -41,18 +36,16 @@
 
 \title{Solving Graph Homomorphism and Subgraph Isomorphism Problems Faster Through Clique Neighbourhood Constraints}
 
-\author{Paper 4726}
-
-% \author{
-% Ciaran McCreesh$^1$
-% \and
-% Sonja Kraiczy$^2$
-% \affiliations
-% $^1$University of Glasgow\\
-% $^2$University of Oxford\\
-% \emails
-% ciaran.mccreesh@glasgow.ac.uk
-% }
+\author{
+Sonja Kraiczy$^1$
+\and
+Ciaran McCreesh$^2$
+\affiliations
+$^1$University of Oxford\\
+$^2$University of Glasgow\\
+\emails
+ciaran.mccreesh@glasgow.ac.uk
+}
 
 \newcommand{\neighbourhood}{\operatorname{N}}
 \newcommand{\vertexset}{\operatorname{V}}
@@ -83,12 +76,11 @@ non-adjacent vertices.  However, in application-oriented papers, particularly fr
 and chemistry, the same name is often implicitly used to mean the \emph{non-induced} version of the
 problem (which does not require that non-adjacency be preserved) since this more accurately models
 the real-world problem being solved \cite{Willett1999,EhrlichR11}. Despite being theoretically hard
-problems, these applications, along with
-others in areas including compilers \cite{DBLP:conf/cp/BlindellLCS15},
-graph databases \cite{DBLP:journals/jair/McCreeshPST18}
-and pattern recognition \cite{DBLP:journals/ijprai/FoggiaPV14},
-have given rise to a large amount of research into designing practical algorithms for solving these
-problems.  Most approaches are based either upon very fast but simple backtracking algorithms
+problems, these applications, along with others in areas including compilers
+\cite{DBLP:conf/cp/BlindellLCS15}, graph databases \cite{DBLP:journals/jair/McCreeshPST18} and
+pattern recognition \cite{DBLP:journals/ijprai/FoggiaPV14}, have given rise to a large amount of
+research into designing practical algorithms for solving these problems.  Most approaches are based
+either upon very fast but simple backtracking algorithms
 \cite{DBLP:journals/pami/CordellaFSV04,DBLP:journals/bmcbi/BonniciGPSF13,DBLP:conf/gbrpr/CarlettiFSV17}
 which often but not always perform well on very easy instances, or upon constraint programming
 algorithms
@@ -114,8 +106,6 @@ maps adjacent vertices to adjacent vertices, with no injectivity requirement, wh
 injective homomorphism} is one which is injective when restricted to any individual vertex and its
 neighbourhood. Both are better models for some applications
 \cite{DBLP:journals/dam/FialaKK01,DBLP:conf/semweb/Baget05,DBLP:conf/iccs/CorbyF07,DBLP:journals/csr/FialaK08,DBLP:journals/pvldb/FanLMWW10,DBLP:journals/tcs/ChaplickFHPT15}.
-(There is also an edge-surjective version of the problem known as an \emph{epimorphism}
-\cite{DBLP:journals/dam/GayFMSS14}.)
 
 These injectivity relaxations have received much less attention
 from a practical solving perspective.  One might hope that the inference techniques developed for
@@ -141,7 +131,7 @@ they perform well off the shelf, rather than because they exactly match domain r
 \section{Background and Theory}
 
 We begin by introducing notation and terminology, and by giving the theory which
-support our implementation.
+supports our implementation.
 
 \paragraph{Graphs.} Let $G$ and $H$ be graphs. Let $v \in \vertexset(G)$ be a vertex of $G$. The
 \emph{(open) neighbourhood} of $v$, written $\neighbourhood_G(v)$, is the set of vertices adjacent
@@ -324,7 +314,7 @@ propagation power.
     the problem of finding a subgraph isomorphism $i$ from a graph $G$ to a graph $H$, the following
     constraints are implied for any pair of vertices $v, w \in \vertexset(G)$:
     \begin{enumerate}
-        \item The distance between $v$ and $w$ is at least the distance between $i(v)$ and $i(w)$
+        \item The distance between $v$ and $w$ is at most the distance between $i(v)$ and $i(w)$
             \cite{DBLP:conf/cp/AudemardLMGP14}.
         \item If there are at least $k$ simple
             paths of length exactly $\ell$ between $v$ and $w$, then there must be at least $k$
@@ -340,8 +330,7 @@ path of length two (see \cref{figure:counterexamples}, top right). The second pr
 hold in full generality for local injectivity, because, for example, a path of length three may be
 mapped onto a triangle (\cref{figure:counterexamples}, bottom left): while standard injectivity
 prevents any kind of merging, local injectivity only prevents two vertices from being merged if they
-are both in the neighbourhood of the same vertex. However, we observe that a weaker result does
-hold:
+are both in the neighbourhood of the same vertex. However, a weaker result does hold:
 
 \begin{proposition}[paths of length two are preserved by locally injective
     homomorphisms]\label{proposition:paths}For the problem of finding a locally injective graph
@@ -360,11 +349,12 @@ Rather than using distance properties directly as \citet{DBLP:conf/cp/AudemardLM
 \citet{DBLP:conf/cp/McCreeshP15} introduced the notion of \emph{supplemental} graphs, with the idea
 that a constraint programming algorithm can search for a mapping which is simultaneously a subgraph
 isomorphism between several different pairs of graphs. Let $G^d$ be the graph with the same set of
-vertices as $G$, but an edge between vertices $v$ and $w$ if the distance between $v$ and $w$ in $G$
-is at most $d$.  Similarly, let $G^{n,\ell}$ be the graph with the same set of vertices as $G$, but
-an edge between vertices $v$ and $w$ if there are at least $n$ simple paths of length exactly $\ell$
-between $v$ and $w$ in $G$. Following on from \cref{proposition:distances,proposition:paths}, we
-generalise the result of \citeauthor{DBLP:conf/cp/McCreeshP15} as follows.
+vertices as $G$, but with an edge between vertices $v$ and $w$ if the distance between $v$ and $w$
+in $G$ is at most $d$.  Similarly, let $G^{n,\ell}$ be the graph with the same set of vertices as
+$G$, but an edge between vertices $v$ and $w$ if there are at least $n$ simple paths of length
+exactly $\ell$ between $v$ and $w$ in $G$. Following on from
+\cref{proposition:distances,proposition:paths}, we generalise the result of
+\citeauthor{DBLP:conf/cp/McCreeshP15} as follows.
 
 \begin{corollary}Any homomorphism $i$ from $G$ to $H$ gives a homomorphism $i^d$ from $G^d$ to $H^d$
     defined by $i^d(v) = i(v)$, for all $d$. Furthermore, if $i$ is locally injective, then for all
@@ -477,32 +467,32 @@ largest domain vertex has a neighbourhood clique size of only 5 then this is irr
 
 \subsection{Proof Logging}
 
-Given the complexity of modern solvers, a critical question is how we can be sure
-that they are producing correct answers. The Glasgow Subgraph Solver's subgraph isomorphism and
-clique algorithms are both \emph{certifying} \cite{DBLP:journals/csr/McConnellMNS11}: that is, they
-can output a mathematical proof that they have reached a correct answer by sound reasoning, and this
-proof log can be verified by the VeriPB proof checking tool
-\cite{DBLP:conf/cp/GochtMMNPT20,DBLP:conf/ijcai/GochtMN20}.
-
-Implementing proof-logging for the changes not involving clique-finding was routine---although proof
-logging did catch an implementation bug where we were incorrectly applying degree-based filtering on
-the $G^{2,n}$ graphs for locally injective homomorphisms, in violation of the counter-example to
-\cref{corollary:lishapes}. For clique-based filtering, the process involved substantially more
-technical work. Briefly, for a given domain vertex $v$ that cannot be mapped to a codomain vertex
-$w$, it is possible to instruct the proof verifier to derive a set of conditional clique constraints
-saying that ``either $v$ cannot be mapped to $w$, or the following clique-like problem must be
-satisfiable'' by following steps similar to the maximum common subgraph to clique reduction
-presented by \citet{DBLP:conf/cp/GochtMMNPT20}, and then to reuse clique
-proof-logging techniques to show that this clique-like problem is unsatisfiable.
+Given the complexity of modern solvers, a critical question is how we can be sure that they are
+producing correct answers. The Glasgow Subgraph Solver's subgraph isomorphism and clique algorithms
+are both \emph{certifying} \cite{DBLP:journals/csr/McConnellMNS11}: that is, they can output a
+mathematical proof that they have reached a correct answer by sound reasoning, and this proof log
+can be verified by the VeriPB proof checking tool
+\cite{DBLP:conf/cp/GochtMMNPT20,DBLP:conf/ijcai/GochtMN20}. We therefore extended the solver's
+existing proof logging support to cover our additions. For the changes not involving clique-finding,
+this was entirely routine---although proof logging did catch an implementation bug where we were
+incorrectly applying degree-based filtering on the $G^{2,n}$ graphs for locally injective
+homomorphisms, in violation of the counter-example to \cref{corollary:lishapes}. For clique-based
+filtering, the process involved substantially more technical work. Briefly, for a given domain
+vertex $v$ that cannot be mapped to a codomain vertex $w$, it is possible to instruct the proof
+verifier to derive a set of conditional clique constraints saying that ``either $v$ cannot be mapped
+to $w$, or the following clique-like problem must be satisfiable'' by following steps similar to the
+maximum common subgraph to clique reduction presented by \citet{DBLP:conf/cp/GochtMMNPT20}, and then
+to reuse clique proof-logging techniques to show that this clique-like problem is unsatisfiable.  We
+were thus able to produce and verifying proofs of correctness for medium-sized instances, giving us
+confidence our implementation was correct.
 
 This situation is not entirely ideal. The proofs produced this way are inherently dependent upon a
-\emph{particular} choice of domain and codomain vertices. When not proof logging, we only need to
-solve a single maximum clique problem for each vertex in the domain, and a restricted clique problem
-for each vertex in the codomain. With proof logging, we must instead solve restricted clique
-problems for each assignment that is to be filtered, which is potentially a linear factor blowup.
-This seems wasteful, since for any given codomain vertex these proofs are effectively the same up to
-substitution of variable names. It would therefore seem desirable to extend the proof system with a
-substitution rule which would allow such proofs to be recycled to avoid duplication.
+\emph{particular} choice of domain and codomain vertices. Thus, when proof logging, we must solve
+restricted clique problems for each assignment that is to be filtered using a clique rule, rather
+than for each clique found; this is potentially a linear factor blowup.  This seems wasteful, since
+for any given codomain vertex these proofs are effectively the same up to substitution of variable
+names. It would therefore seem desirable to extend the proof system with a substitution rule which
+would allow such proofs to be recycled to avoid duplication.
 
 \section{Experiments}
 
@@ -555,11 +545,13 @@ substitution rule which would allow such proofs to be recycled to avoid duplicat
 
 We now evaluate this approach empirically. Our experiments are performed on a cluster of machines
 with dual Intel Xeon E5-2697A v4 CPUs with 512GBytes of RAM, running Ubuntu 18.04, and using a
-timeout of one hour. Because injectivity relaxations have received less attention until now, for all
-three problem variants we will use a suite of 14,621 benchmark instances designed for the subgraph
-isomorphism problem \cite{DBLP:conf/lion/KotthoffMS16}. Note that 8,904 of these instances contain
-at least one loop in the codomain graph, and so are trivial for the homomorphism problem---we still
-include these to avoid using different y-axes on different plots.
+timeout of one hour; we do not enable proof logging for these benchmarks since proof logging
+introduces large slowdowns due to I/O costs \cite{DBLP:conf/cp/GochtMMNPT20}. Because injectivity
+relaxations have received less attention until now, for all three problem variants we will use a
+suite of 14,621 benchmark instances designed for the subgraph isomorphism problem
+\cite{DBLP:conf/lion/KotthoffMS16}. Note that 8,904 of these instances contain at least one loop in
+the codomain graph, and so are trivial for the homomorphism problem---we still include these to
+avoid using different y-axes on different plots.
 
 In the top left plot of \cref{figure:plots} we show the cumulative number of instances solved over
 time, for each of the three problem variants, using the Glasgow Subgraph Solver with and without our
@@ -618,10 +610,10 @@ problems. We would be interested to see if filtering based upon other hard probl
 similar benefits---for example, homomorphisms also interact in potentially helpful ways with various
 colouring properties.
 
-% \section*{Acknowledgements}
-% 
-% This work was supported by the Engineering and Physical Sciences Research Council [grant number
-% EP/P026842/1].
+\section*{Acknowledgements}
+
+This work was supported by the Engineering and Physical Sciences Research Council [grant number
+EP/P026842/1].
 
 \bibliographystyle{named}
 \bibliography{paper}
