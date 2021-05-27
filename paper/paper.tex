@@ -166,9 +166,10 @@ mapped to adjacent vertices. For the injective variants, one or more \emph{all-d
 constraints are also present. A typical constraint programming approach to solving such a problem is
 to combine inference through constraint propagation with an intelligent backtracking search.
 
-\paragraph{Degree-based invariants.} Constraint programming techniques for finding
-homomorphisms can be made much more effective by exploiting certain invariants. It is
-straightforward to verify the following.
+\subsection{Invariants}
+
+Constraint programming techniques for finding homomorphisms can be made much more effective by
+exploiting certain invariants. It is straightforward to verify the following.
 
 \begin{proposition}[neighbourhood degree sequences are preserved]\label{proposition:degreends}
     Suppose  $i$ is a locally injective homomorphism from $G$ to  $H$. Let
@@ -183,6 +184,9 @@ sequences. The simplest way for a constraint programming algorithm to use these 
 constraints, which are propagated when domains are initialised, before search begins. For each
 domain representing a domain vertex, any value representing a codomain vertex whose degree or
 neighbourhood degree sequence is too low may immediately be rejected.
+However, these invariants do \emph{not} hold for homomorphisms in general. As a
+counter-example, a homomorphism may map a star graph onto a single edge, as in
+\cref{figure:counterexamples} (top left).
 
 \begin{figure}
     \hfill\,\begin{minipage}{3cm}
@@ -301,14 +305,9 @@ neighbourhood degree sequence is too low may immediately be rejected.
         injective.} \label{figure:counterexamples}
 \end{figure}
 
-However, these invariants do \emph{not} hold for homomorphisms in general. As a
-counter-example, a homomorphism may map a star graph onto a single edge, as in
-\cref{figure:counterexamples} (top left).
-
-\paragraph{Path-based invariants.} Constraint programming solvers can also exploit
-invariants that are based upon paths. This is done by automatically adding \emph{implied}
-constraints to the problem that are implied by the original model, but that will give stronger
-propagation power.
+Constraint programming solvers can also exploit invariants that are based upon paths. This is done
+by automatically adding \emph{implied} constraints to the problem that are implied by the original
+model, but that will give stronger propagation.
 
 \begin{proposition}[paths are preserved by subgraph isomorphisms]\label{proposition:distances}For
     the problem of finding a subgraph isomorphism $i$ from a graph $G$ to a graph $H$, the following
@@ -367,7 +366,7 @@ illustrate a counter-example in \cref{figure:counterexamples} (bottom right). Th
 subgraph isomorphism, where $i^{n,\ell}$ is a subgraph isomorphism for all $\ell$
 \cite{DBLP:conf/cp/McCreeshP15}.
 
-\paragraph{Cliques and homomorphisms.} We now discuss the main new technique of this paper. Observe
+We now discuss the main new technique of this paper. Observe
 that so far, we have not seen any unary constraints which are valid for the general homomorphism
 problem. All existing constraint programming approaches for the subgraph isomorphism problem begin
 by branching on the variable which has the smallest domain---typically this will be a domain for a
@@ -483,8 +482,8 @@ verifier to derive a set of conditional clique constraints saying that ``either 
 to $w$, or the following clique-like problem must be satisfiable'' by following steps similar to the
 maximum common subgraph to clique reduction presented by \citet{DBLP:conf/cp/GochtMMNPT20}, and then
 to reuse clique proof-logging techniques to show that this clique-like problem is unsatisfiable.  We
-were thus able to produce and verifying proofs of correctness for medium-sized instances, giving us
-confidence our implementation was correct.
+were able to produce and verify proofs of correctness for medium-sized instances, giving us
+confidence in our implementation.
 
 This situation is not entirely ideal. The proofs produced this way are inherently dependent upon a
 \emph{particular} choice of domain and codomain vertices. Thus, when proof logging, we must solve
